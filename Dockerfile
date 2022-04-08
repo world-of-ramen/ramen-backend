@@ -1,8 +1,9 @@
 FROM python:3.8.12-slim
 
-ENV PYTHONUNBUFFERED 1
+ENV PORT=$_PORT
+ENV PYTHONUNBUFFERED=1
 
-EXPOSE 8000
+EXPOSE 8080
 WORKDIR /app
 
 
@@ -13,12 +14,12 @@ RUN apt-get update && \
 COPY poetry.lock pyproject.toml ./
 RUN pip install --upgrade pip && pip install poetry && \
     poetry config virtualenvs.in-project true && \
-    poetry install
-    # poetry install --no-dev
+    # poetry install
+    poetry install --no-dev
 
 COPY . ./
 
-CMD poetry run alembic upgrade head && \
-    poetry run uvicorn --host=0.0.0.0 app.main:app
+# CMD poetry run alembic upgrade head && \
+#     poetry run uvicorn --host=0.0.0.0 app.main:app
 
-# CMD poetry run uvicorn --host=0.0.0.0 app.main:app
+CMD poetry run uvicorn --host=0.0.0.0 --port ${PORT:=8080} app.main:app
