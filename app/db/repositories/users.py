@@ -4,74 +4,62 @@ from app.db.errors import EntityDoesNotExist
 from app.db.queries.queries import queries
 from app.db.repositories.base import BaseRepository
 from app.models.domain.users import User
-from app.models.domain.users import UserInDB
 
 
 class UsersRepository(BaseRepository):
-    async def get_user_by_email(self, *, email: str) -> UserInDB:
-        user_row = await queries.get_user_by_email(self.connection, email=email)
+    async def get_user_by_id(self, *, id: int) -> User:
+        user_row = await queries.get_user_by_id(self.connection, id=id)
         if user_row:
-            return UserInDB(**user_row)
+            return User(**user_row)
 
-        raise EntityDoesNotExist("user with email {0} does not exist".format(email))
+        raise EntityDoesNotExist(f"user with id {id} does not exist")
 
-    async def get_user_by_username(self, *, username: str) -> UserInDB:
-        user_row = await queries.get_user_by_username(
-            self.connection, username=username
+    async def get_user_by_wallet_address(self, *, wallet_address: str) -> User:
+        user_row = await queries.get_user_by_wallet_address(
+            self.connection, wallet_address=wallet_address
         )
         if user_row:
-            return UserInDB(**user_row)
+            return User(**user_row)
 
         raise EntityDoesNotExist(
-            "user with username {0} does not exist".format(username)
+            f"user with wallet_address {wallet_address} does not exist"
         )
 
     async def create_user(
-        self, *, username: str, email: str, password: str
-    ) -> UserInDB:
-        user = UserInDB(username=username, email=email)
-        user.change_password(password)
+        self, *, wallet_address: str, image: Optional[str] = None
+    ) -> User:
+        user = User(wallet_address=wallet_address, image=image, status=1)
 
         async with self.connection.transaction():
             user_row = await queries.create_new_user(
                 self.connection,
-                username=user.username,
-                email=user.email,
-                salt=user.salt,
-                hashed_password=user.hashed_password,
+                wallet_address=user.wallet_address,
+                image=user.image,
+                status=user.status,
             )
-
+            user.id_ = user_row["id"]
         return user.copy(update=dict(user_row))
 
-    async def update_user(  # noqa: WPS211
+    async def update_user(
         self,
         *,
         user: User,
-        username: Optional[str] = None,
-        email: Optional[str] = None,
-        password: Optional[str] = None,
-        bio: Optional[str] = None,
+        wallet_address: Optional[str] = None,
         image: Optional[str] = None,
-    ) -> UserInDB:
-        user_in_db = await self.get_user_by_username(username=user.username)
-
-        user_in_db.username = username or user_in_db.username
-        user_in_db.email = email or user_in_db.email
-        user_in_db.bio = bio or user_in_db.bio
+        status: Optional[int] = None,
+    ) -> User:
+        user_in_db = await self.get_user_by_id(id=user.id_)
+        user_in_db.wallet_address = wallet_address or user_in_db.wallet_address
         user_in_db.image = image or user_in_db.image
-        if password:
-            user_in_db.change_password(password)
+        user_in_db.status = status if status is not None else user_in_db.status
 
         async with self.connection.transaction():
-            user_in_db.updated_at = await queries.update_user_by_username(
+            user_in_db.updated_at = await queries.update_user_by_id(
                 self.connection,
-                username=user.username,
-                new_username=user_in_db.username,
-                new_email=user_in_db.email,
-                new_salt=user_in_db.salt,
-                new_password=user_in_db.hashed_password,
-                new_bio=user_in_db.bio,
+                id=user.id_,
+                new_wallet_address=user.wallet_address,
                 new_image=user_in_db.image,
+                new_status=user_in_db.status,
             )
 
         return user_in_db

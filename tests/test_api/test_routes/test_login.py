@@ -4,13 +4,13 @@ from httpx import AsyncClient
 from starlette.status import HTTP_200_OK
 from starlette.status import HTTP_400_BAD_REQUEST
 
-from app.models.domain.users import UserInDB
+from app.models.domain.users import User
 
 pytestmark = pytest.mark.asyncio
 
 
 async def test_user_successful_login(
-    app: FastAPI, client: AsyncClient, test_user: UserInDB
+    app: FastAPI, client: AsyncClient, test_user: User
 ) -> None:
     login_json = {"user": {"email": "test@test.com", "password": "password"}}
 
@@ -25,7 +25,7 @@ async def test_user_successful_login(
 async def test_user_login_when_credential_part_does_not_match(
     app: FastAPI,
     client: AsyncClient,
-    test_user: UserInDB,
+    test_user: User,
     credentials_part: str,
     credentials_value: str,
 ) -> None:

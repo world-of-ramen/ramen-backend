@@ -81,7 +81,7 @@ async def _get_current_user(
     settings: AppSettings = Depends(get_app_settings),
 ) -> User:
     try:
-        username = jwt.get_username_from_token(
+        id = jwt.get_user_id_from_token(
             token, str(settings.secret_key.get_secret_value())
         )
     except ValueError:
@@ -90,7 +90,7 @@ async def _get_current_user(
         )
 
     try:
-        return await users_repo.get_user_by_username(username=username)
+        return await users_repo.get_user_by_id(id=id)
     except EntityDoesNotExist:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN, detail=strings.MALFORMED_PAYLOAD

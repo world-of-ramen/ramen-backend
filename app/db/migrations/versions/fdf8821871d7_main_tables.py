@@ -116,11 +116,53 @@ def create_stores_table() -> None:
     )
 
 
+def create_users_table() -> None:
+    op.create_table(
+        "users",
+        sa.Column("id", sa.Integer, primary_key=True),
+        sa.Column(
+            "wallet_address",
+            sa.Text,
+            unique=True,
+            nullable=False,
+            index=True,
+            comment="Ex: 0x123456789012345678901",
+        ),
+        sa.Column(
+            "image",
+            sa.Text,
+            unique=False,
+            nullable=True,
+            index=False,
+            comment="http://oo.jpeg",
+        ),
+        sa.Column(
+            "status",
+            sa.Integer,
+            nullable=False,
+            index=True,
+            comment="Ex: 0: 草稿, 1: 已發佈, 2: 已刪除",
+        ),
+        *timestamps(),
+    )
+    op.execute(
+        """
+        CREATE TRIGGER update_users_modtime
+            BEFORE UPDATE
+            ON users
+            FOR EACH ROW
+        EXECUTE PROCEDURE update_updated_at_column();
+        """
+    )
+
+
 def upgrade() -> None:
     create_updated_at_trigger()
     create_stores_table()
+    create_users_table()
 
 
 def downgrade() -> None:
+    op.drop_table("users")
     op.drop_table("stores")
     op.execute("DROP FUNCTION update_updated_at_column")

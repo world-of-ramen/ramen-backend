@@ -39,64 +39,25 @@ class StoresQueriesMixin:
     ) -> Record: ...
 
 class UsersQueriesMixin:
-    async def get_user_by_uid(self, conn: Connection, *, uid: str) -> Record: ...
+    async def get_user_by_id(self, conn: Connection, *, id: int) -> Record: ...
     async def get_users(self, conn: Connection, limit: int, offset: int) -> Record: ...
-    async def get_users_for_admin(self, conn: Connection, limit: int, offset: int) -> Record: ...
-    async def get_users_by_email(self, conn: Connection, email: str, limit: int, offset: int) -> Record: ...
-    async def get_users_by_email_for_admin(self, conn: Connection, email: str, limit: int, offset: int) -> Record: ...
-    async def get_user_by_pid(self, conn: Connection, *, pid: str, provider: str ) -> Record: ...
-    async def get_user_by_email(self, conn: Connection, *, email: str) -> Record: ...
-    async def get_user_by_username(
-        self, conn: Connection, *, username: str
-    ) -> Record: ...
-    async def get_followers(self, conn: Connection, uid: str, limit: int, offset: int) -> Record: ...
+    async def get_user_by_wallet_address(self, conn: Connection, *, wallet_address: str) -> Record: ...
     async def create_new_user(
         self,
         conn: Connection,
         *,
-        username: Optional[str],
-        uid: str,
-        role_id: int,
-        email: str
+        wallet_address: str,
+        image: str,
+        status: int
     ) -> Record: ...
-    async def update_user_by_uid(
+    async def update_user_by_id(
         self,
         conn: Connection,
         *,
-        uid: str,
-        new_username: str,
-        new_email: str,
-        new_bio: Optional[str],
+        id: int,
+        new_wallet_address: Optional[str],
         new_image: Optional[str],
-        new_cover: Optional[str],
-        new_subject: Optional[str],
-        new_school: Optional[str],
-        new_ig: Optional[str],
-        new_fb: Optional[str],
-        new_yt: Optional[str],
-    ) -> Record: ...
-    async def update_user_by_uid_admin(
-        self,
-        conn: Connection,
-        *,
-        uid: str,
-        new_role_id: Optional[int],
-    ) -> Record: ...
-    async def update_user_by_pid(
-        self,
-        conn: Connection,
-        *,
-        uid: str,
-        new_username: str,
-        new_email: str,
-        new_bio: Optional[str],
-        new_image: Optional[str],
-        new_cover: Optional[str],
-        new_subject: Optional[str],
-        new_school: Optional[str],
-        new_ig: Optional[str],
-        new_fb: Optional[str],
-        new_yt: Optional[str],
+        new_status: Optional[int],
     ) -> Record: ...
 
 class ProfilesQueriesMixin:

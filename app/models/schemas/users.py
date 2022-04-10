@@ -1,28 +1,22 @@
 from typing import Optional
 
 from pydantic import BaseModel
-from pydantic import EmailStr
-from pydantic import HttpUrl
 
 from app.models.domain.users import User
 from app.models.schemas.ramenschema import RamenSchema
 
 
 class UserInLogin(RamenSchema):
-    email: EmailStr
-    password: str
+    wallet_address: str
 
 
-class UserInCreate(UserInLogin):
-    username: str
+class UserInCreate(BaseModel):
+    wallet_address: str
+    image: Optional[str] = None
 
 
 class UserInUpdate(BaseModel):
-    username: Optional[str] = None
-    email: Optional[EmailStr] = None
-    password: Optional[str] = None
-    bio: Optional[str] = None
-    image: Optional[HttpUrl] = None
+    image: Optional[str] = None
 
 
 class UserWithToken(User):
@@ -31,3 +25,7 @@ class UserWithToken(User):
 
 class UserInResponse(RamenSchema):
     user: UserWithToken
+
+
+class UserByIdInResponse(RamenSchema):
+    user: User

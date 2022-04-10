@@ -6,14 +6,14 @@ from starlette import status
 
 from app.db.repositories.profiles import ProfilesRepository
 from app.db.repositories.users import UsersRepository
-from app.models.domain.users import UserInDB
+from app.models.domain.users import User
 from app.models.schemas.profiles import ProfileInResponse
 
 pytestmark = pytest.mark.asyncio
 
 
 async def test_unregistered_user_will_receive_profile_without_following(
-    app: FastAPI, client: AsyncClient, test_user: UserInDB
+    app: FastAPI, client: AsyncClient, test_user: User
 ) -> None:
     response = await client.get(
         app.url_path_for("profiles:get-profile", username=test_user.username)
@@ -43,7 +43,7 @@ async def test_user_that_does_not_follows_another_will_receive_profile_without_f
 
 
 async def test_user_that_follows_another_will_receive_profile_with_follow(
-    app: FastAPI, authorized_client: AsyncClient, pool: Pool, test_user: UserInDB
+    app: FastAPI, authorized_client: AsyncClient, pool: Pool, test_user: User
 ) -> None:
     async with pool.acquire() as conn:
         users_repo = UsersRepository(conn)
@@ -94,7 +94,7 @@ async def test_user_can_change_following_for_another_user(
     app: FastAPI,
     authorized_client: AsyncClient,
     pool: Pool,
-    test_user: UserInDB,
+    test_user: User,
     api_method: str,
     route_name: str,
     following: bool,
@@ -137,7 +137,7 @@ async def test_user_can_not_change_following_state_to_the_same_twice(
     app: FastAPI,
     authorized_client: AsyncClient,
     pool: Pool,
-    test_user: UserInDB,
+    test_user: User,
     api_method: str,
     route_name: str,
     following: bool,
@@ -170,7 +170,7 @@ async def test_user_can_not_change_following_state_to_the_same_twice(
 async def test_user_can_not_change_following_state_for_him_self(
     app: FastAPI,
     authorized_client: AsyncClient,
-    test_user: UserInDB,
+    test_user: User,
     api_method: str,
     route_name: str,
 ) -> None:

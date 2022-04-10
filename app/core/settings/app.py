@@ -22,7 +22,9 @@ class AppSettings(BaseAppSettings):
 
     openapi_url: str = "/openapi.json"
     redoc_url: str = "/redoc"
-    title: str = "World of ramen application"
+    title: str = "World of Ramen application"
+    description: str = "Backend service with python and fastapi"
+
     version: str = "0.0.0"
 
     database_url: PostgresDsn
@@ -40,6 +42,8 @@ class AppSettings(BaseAppSettings):
     logging_level: int = logging.INFO
     loggers: Tuple[str, str] = ("uvicorn.asgi", "uvicorn.access")
 
+    bucket_name: str = ""
+
     class Config:
         validate_assignment = True
 
@@ -52,6 +56,7 @@ class AppSettings(BaseAppSettings):
             "openapi_url": self.openapi_url,
             "redoc_url": self.redoc_url,
             "title": self.title,
+            "description": self.description,
             "version": self.version,
         }
 

@@ -5,7 +5,7 @@ from httpx import AsyncClient
 from starlette import status
 
 from app.db.repositories.users import UsersRepository
-from app.models.domain.users import UserInDB
+from app.models.domain.users import User
 from app.models.schemas.users import UserInResponse
 
 pytestmark = pytest.mark.asyncio
@@ -21,11 +21,7 @@ def wrong_authorization_header(request) -> str:
     (("GET", "users:get-current-user"), ("PUT", "users:update-current-user")),
 )
 async def test_user_can_not_access_own_profile_if_not_logged_in(
-    app: FastAPI,
-    client: AsyncClient,
-    test_user: UserInDB,
-    api_method: str,
-    route_name: str,
+    app: FastAPI, client: AsyncClient, test_user: User, api_method: str, route_name: str
 ) -> None:
     response = await client.request(api_method, app.url_path_for(route_name))
     assert response.status_code == status.HTTP_403_FORBIDDEN
@@ -38,7 +34,7 @@ async def test_user_can_not_access_own_profile_if_not_logged_in(
 async def test_user_can_not_retrieve_own_profile_if_wrong_token(
     app: FastAPI,
     client: AsyncClient,
-    test_user: UserInDB,
+    test_user: User,
     api_method: str,
     route_name: str,
     wrong_authorization_header: str,
@@ -52,7 +48,7 @@ async def test_user_can_not_retrieve_own_profile_if_wrong_token(
 
 
 async def test_user_can_retrieve_own_profile(
-    app: FastAPI, authorized_client: AsyncClient, test_user: UserInDB, token: str
+    app: FastAPI, authorized_client: AsyncClient, test_user: User, token: str
 ) -> None:
     response = await authorized_client.get(app.url_path_for("users:get-current-user"))
     assert response.status_code == status.HTTP_200_OK
@@ -73,7 +69,7 @@ async def test_user_can_retrieve_own_profile(
 async def test_user_can_update_own_profile(
     app: FastAPI,
     authorized_client: AsyncClient,
-    test_user: UserInDB,
+    test_user: User,
     token: str,
     update_value: str,
     update_field: str,
@@ -88,27 +84,27 @@ async def test_user_can_update_own_profile(
     assert user_profile["user"][update_field] == update_value
 
 
-async def test_user_can_change_password(
-    app: FastAPI,
-    authorized_client: AsyncClient,
-    test_user: UserInDB,
-    token: str,
-    pool: Pool,
-) -> None:
-    response = await authorized_client.put(
-        app.url_path_for("users:update-current-user"),
-        json={"user": {"password": "new_password"}},
-    )
-    assert response.status_code == status.HTTP_200_OK
-    user_profile = UserInResponse(**response.json())
+# async def test_user_can_change_password(
+#     app: FastAPI,
+#     authorized_client: AsyncClient,
+#     test_user: User,
+#     token: str,
+#     pool: Pool,
+# ) -> None:
+#     response = await authorized_client.put(
+#         app.url_path_for("users:update-current-user"),
+#         json={"user": {"password": "new_password"}},
+#     )
+#     assert response.status_code == status.HTTP_200_OK
+#     user_profile = UserInResponse(**response.json())
 
-    async with pool.acquire() as connection:
-        users_repo = UsersRepository(connection)
-        user = await users_repo.get_user_by_username(
-            username=user_profile.user.username
-        )
+#     async with pool.acquire() as connection:
+#         users_repo = UsersRepository(connection)
+#         user = await users_repo.get_user_by_wallet_address(
+#             username=user_profile.user.wallet_address
+#         )
 
-    assert user.check_password("new_password")
+#     assert user.check_password("new_password")
 
 
 @pytest.mark.parametrize(

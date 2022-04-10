@@ -6,7 +6,7 @@ from starlette.status import HTTP_201_CREATED
 from starlette.status import HTTP_400_BAD_REQUEST
 
 from app.db.repositories.users import UsersRepository
-from app.models.domain.users import UserInDB
+from app.models.domain.users import User
 
 pytestmark = pytest.mark.asyncio
 
@@ -38,7 +38,7 @@ async def test_user_success_registration(
 async def test_failed_user_registration_when_some_credentials_are_taken(
     app: FastAPI,
     client: AsyncClient,
-    test_user: UserInDB,
+    test_user: User,
     credentials_part: str,
     credentials_value: str,
 ) -> None:

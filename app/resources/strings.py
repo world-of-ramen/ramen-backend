@@ -8,6 +8,7 @@ USER_IS_NOT_AUTHOR_OF_ARTICLE = "you are not an author of this article"
 
 INCORRECT_LOGIN_INPUT = "incorrect email or password"
 USERNAME_TAKEN = "user with this username already exists"
+WALLET_ADDRESS_TAKEN = "user with this wallet address already exists"
 EMAIL_TAKEN = "user with this email already exists"
 
 UNABLE_TO_FOLLOW_YOURSELF = "user can not follow him self"
@@ -24,3 +25,5 @@ ARTICLE_IS_NOT_FAVORITED = "article is not favorited"
 COMMENT_DOES_NOT_EXIST = "comment does not exist"
 
 AUTHENTICATION_REQUIRED = "authentication required"
+
+UNABLE_TO_UPLOAD_IMAGE = "upload image failed"

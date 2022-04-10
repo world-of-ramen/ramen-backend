@@ -9,7 +9,7 @@ from app.db.repositories.articles import ArticlesRepository
 from app.db.repositories.profiles import ProfilesRepository
 from app.db.repositories.users import UsersRepository
 from app.models.domain.articles import Article
-from app.models.domain.users import UserInDB
+from app.models.domain.users import User
 from app.models.schemas.articles import ArticleInResponse
 from app.models.schemas.articles import ListOfArticlesInResponse
 
@@ -31,7 +31,7 @@ async def test_user_can_not_create_article_with_duplicated_slug(
 
 
 async def test_user_can_create_article(
-    app: FastAPI, authorized_client: AsyncClient, test_user: UserInDB
+    app: FastAPI, authorized_client: AsyncClient, test_user: User
 ) -> None:
     article_data = {
         "title": "Test Slug",
@@ -47,7 +47,7 @@ async def test_user_can_create_article(
 
 
 async def test_not_existing_tags_will_be_created_without_duplication(
-    app: FastAPI, authorized_client: AsyncClient, test_user: UserInDB
+    app: FastAPI, authorized_client: AsyncClient, test_user: User
 ) -> None:
     article_data = {
         "title": "Test Slug",
@@ -183,7 +183,7 @@ async def test_user_can_change_favorite_state(
     app: FastAPI,
     authorized_client: AsyncClient,
     test_article: Article,
-    test_user: UserInDB,
+    test_user: User,
     pool: Pool,
     api_method: str,
     route_name: str,
@@ -221,7 +221,7 @@ async def test_user_can_not_change_article_state_twice(
     app: FastAPI,
     authorized_client: AsyncClient,
     test_article: Article,
-    test_user: UserInDB,
+    test_user: User,
     pool: Pool,
     api_method: str,
     route_name: str,
@@ -245,7 +245,7 @@ async def test_empty_feed_if_user_has_not_followings(
     app: FastAPI,
     authorized_client: AsyncClient,
     test_article: Article,
-    test_user: UserInDB,
+    test_user: User,
     pool: Pool,
 ) -> None:
     async with pool.acquire() as connection:
@@ -278,7 +278,7 @@ async def test_user_will_receive_only_following_articles(
     app: FastAPI,
     authorized_client: AsyncClient,
     test_article: Article,
-    test_user: UserInDB,
+    test_user: User,
     pool: Pool,
 ) -> None:
     following_author_username = "user-2"
@@ -324,7 +324,7 @@ async def test_user_receiving_feed_with_limit_and_offset(
     app: FastAPI,
     authorized_client: AsyncClient,
     test_article: Article,
-    test_user: UserInDB,
+    test_user: User,
     pool: Pool,
 ) -> None:
     async with pool.acquire() as connection:
@@ -366,7 +366,7 @@ async def test_user_receiving_feed_with_limit_and_offset(
 
 
 async def test_article_will_contain_only_attached_tags(
-    app: FastAPI, authorized_client: AsyncClient, test_user: UserInDB, pool: Pool
+    app: FastAPI, authorized_client: AsyncClient, test_user: User, pool: Pool
 ) -> None:
     attached_tags = ["tag1", "tag3"]
 
@@ -406,7 +406,7 @@ async def test_article_will_contain_only_attached_tags(
 async def test_filtering_by_tags(
     app: FastAPI,
     authorized_client: AsyncClient,
-    test_user: UserInDB,
+    test_user: User,
     pool: Pool,
     tag: str,
     result: int,
@@ -454,7 +454,7 @@ async def test_filtering_by_tags(
 async def test_filtering_by_authors(
     app: FastAPI,
     authorized_client: AsyncClient,
-    test_user: UserInDB,
+    test_user: User,
     pool: Pool,
     author: str,
     result: int,
@@ -502,7 +502,7 @@ async def test_filtering_by_authors(
 async def test_filtering_by_favorited(
     app: FastAPI,
     authorized_client: AsyncClient,
-    test_user: UserInDB,
+    test_user: User,
     pool: Pool,
     favorited: str,
     result: int,
@@ -546,7 +546,7 @@ async def test_filtering_by_favorited(
 
 
 async def test_filtering_with_limit_and_offset(
-    app: FastAPI, authorized_client: AsyncClient, test_user: UserInDB, pool: Pool
+    app: FastAPI, authorized_client: AsyncClient, test_user: User, pool: Pool
 ) -> None:
     async with pool.acquire() as connection:
         articles_repo = ArticlesRepository(connection)

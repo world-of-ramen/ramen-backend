@@ -20,7 +20,7 @@ class ProfilesRepository(BaseRepository):
     async def get_profile_by_username(
         self, *, username: str, requested_user: Optional[UserLike]
     ) -> Profile:
-        user = await self._users_repo.get_user_by_username(username=username)
+        user = await self._users_repo.get_user_by_wallet_address(username=username)
 
         profile = Profile(username=user.username, bio=user.bio, image=user.image)
         if requested_user:

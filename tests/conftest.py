@@ -9,7 +9,7 @@ from httpx import AsyncClient
 from app.db.repositories.articles import ArticlesRepository
 from app.db.repositories.users import UsersRepository
 from app.models.domain.articles import Article
-from app.models.domain.users import UserInDB
+from app.models.domain.users import User
 from app.services import jwt
 from tests.fake_asyncpg_pool import FakeAsyncPGPool
 
@@ -56,7 +56,7 @@ def authorization_prefix() -> str:
 
 
 @pytest.fixture
-async def test_user(pool: Pool) -> UserInDB:
+async def test_user(pool: Pool) -> User:
     async with pool.acquire() as conn:
         return await UsersRepository(conn).create_user(
             email="test@test.com", password="password", username="username"
@@ -64,7 +64,7 @@ async def test_user(pool: Pool) -> UserInDB:
 
 
 @pytest.fixture
-async def test_article(test_user: UserInDB, pool: Pool) -> Article:
+async def test_article(test_user: User, pool: Pool) -> Article:
     async with pool.acquire() as connection:
         articles_repo = ArticlesRepository(connection)
         return await articles_repo.create_article(
@@ -78,7 +78,7 @@ async def test_article(test_user: UserInDB, pool: Pool) -> Article:
 
 
 @pytest.fixture
-def token(test_user: UserInDB) -> str:
+def token(test_user: User) -> str:
     return jwt.create_access_token_for_user(test_user, environ["SECRET_KEY"])
 
 
