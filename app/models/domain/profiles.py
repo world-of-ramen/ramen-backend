@@ -1,9 +1,9 @@
 from typing import Optional
 
-from app.models.domain.rwmodel import HoloModel
+from app.models.domain.ramenmodel import RamenModel
 
 
-class Profile(HoloModel):
+class Profile(RamenModel):
     username: str
     bio: str = ""
     image: Optional[str] = None

@@ -2,7 +2,7 @@
 
 Revision ID: fdf8821871d7
 Revises:
-Create Date: 2021-10-24 01:36:44.791880
+Create Date: 2022-04-10 01:36:44.791880
 
 """
 from typing import Tuple
@@ -10,6 +10,7 @@ from typing import Tuple
 import sqlalchemy as sa
 from alembic import op
 from sqlalchemy import func
+from sqlalchemy.dialects.postgresql import JSONB
 
 revision = "fdf8821871d7"
 down_revision = None
@@ -49,117 +50,66 @@ def timestamps() -> Tuple[sa.Column, sa.Column]:
     )
 
 
-def create_customers_table() -> None:
+def create_stores_table() -> None:
     op.create_table(
-        "customers",
+        "stores",
         sa.Column("id", sa.Integer, primary_key=True),
         sa.Column(
-            "uid",
-            sa.Text,
-            unique=True,
-            nullable=False,
-            index=True,
-            comment="Ex: user id: 112233445572319778929:g",
-        ),
-        sa.Column(
-            "role_id",
-            sa.Integer,
-            nullable=False,
-            default=0,
-            index=True,
-            comment="0:general, ... (TBD)",
-        ),
-        sa.Column(
-            "provider",
+            "name",
             sa.Text,
             unique=False,
             nullable=False,
             index=False,
-            comment="Ex: google",
+            comment="Ex: 鷹流拉麵中山店",
         ),
         sa.Column(
-            "pid",
-            sa.Text,
+            "phone", sa.Text, nullable=True, index=False, comment="Ex: 0912345678"
+        ),
+        sa.Column(
+            "address", sa.Text, nullable=True, index=False, comment="Ex: 台北市中山區中山北路二段"
+        ),
+        sa.Column("rating", sa.Float, nullable=True, index=False, comment="Ex: 4.5"),
+        sa.Column(
+            "review_count", sa.Integer, nullable=True, index=False, comment="Ex: 150"
+        ),
+        sa.Column(
+            "image",
+            JSONB,
             unique=False,
+            nullable=True,
+            index=False,
+            comment="Ex:{'style': 'cover', 'url': 'http://oo.jpeg', 'width': '1024', 'height': '768', 'content_type': 'image/jpg'}",
+        ),
+        sa.Column(
+            "social_media",
+            JSONB,
+            unique=False,
+            nullable=True,
+            index=False,
+            comment="Ex:{'facebook': 'xxxx', 'ig': 'xxxx'}",
+        ),
+        sa.Column(
+            "business_hours",
+            JSONB,
+            unique=False,
+            nullable=True,
+            index=False,
+            comment="Ex:{'mo': '星期一 11:00-14:00 17:00-23:00', 'tu': '星期二 11:00-14:00 17:00-23:00'}",
+        ),
+        sa.Column(
+            "status",
+            sa.Integer,
             nullable=False,
             index=True,
-            comment="Ex: provider id: 112233445572319778929",
+            comment="Ex: 0: 草稿, 1: 已發佈, 2: 已刪除",
         ),
-        sa.Column("username", sa.Text, nullable=True, index=True),
-        sa.Column("phone", sa.Text, unique=False, nullable=True, index=True),
-        sa.Column("email", sa.Text, unique=False, nullable=True, index=True),
-        sa.Column("address", sa.Text, unique=False, nullable=True),
-        sa.Column(
-            "gender",
-            sa.Integer,
-            nullable=True,
-            index=True,
-            comment="0=None, 1=Male, 2=Female",
-        ),
-        sa.Column("born_year", sa.Integer, nullable=True, comment="2000"),
-        sa.Column("born_month", sa.Integer, nullable=True, comment="1"),
-        sa.Column("born_date", sa.Integer, nullable=True, comment="1"),
-        sa.Column("occupation", sa.Text, nullable=True),
-        sa.Column("bio", sa.Text, nullable=False, server_default=""),
-        sa.Column("ig", sa.Text, nullable=True, comment="Instagram link"),
-        sa.Column("fb", sa.Text, nullable=True, comment="Facebook link"),
-        sa.Column("yt", sa.Text, nullable=True, comment="Youtube link"),
-        sa.Column("image", sa.Text),
-        sa.Column("cover", sa.Text),
         *timestamps(),
     )
     op.execute(
         """
-        CREATE TRIGGER update_customers_modtime
+        CREATE TRIGGER update_stores_modtime
             BEFORE UPDATE
-            ON customers
-            FOR EACH ROW
-        EXECUTE PROCEDURE update_updated_at_column();
-        """
-    )
-
-
-def create_staff_table() -> None:
-    op.create_table(
-        "staff",
-        sa.Column("id", sa.Integer, primary_key=True),
-        sa.Column("username", sa.Text, unique=False, nullable=False, index=True),
-        sa.Column("account", sa.Text, unique=True, nullable=False, index=True),
-        sa.Column("in_use", sa.Boolean, unique=False, nullable=False, index=True),
-        sa.Column(
-            "dpt",
-            sa.Text,
-            unique=False,
-            nullable=True,
-            index=True,
-            comment="Department Ex: 化妝",
-        ),
-        sa.Column(
-            "role",
-            sa.Integer,
-            unique=False,
-            nullable=False,
-            index=True,
-            comment="0:一般 1:主管 2:super",
-        ),
-        sa.Column("company_name", sa.Text, unique=False, nullable=True, index=True),
-        sa.Column("email", sa.Text, unique=False, nullable=True, index=True),
-        sa.Column("company_seal", sa.Text, unique=False, nullable=True, index=False),
-        sa.Column("boss_seal", sa.Text, unique=False, nullable=True, index=False),
-        sa.Column("phone", sa.Text, unique=False, nullable=True, index=True),
-        sa.Column("address", sa.Text, unique=False, nullable=True),
-        sa.Column("salary", sa.Text, unique=False, nullable=True),
-        sa.Column("salt", sa.Text, nullable=False),
-        sa.Column("hashed_password", sa.Text),
-        sa.Column("bio", sa.Text, nullable=False, server_default=""),
-        sa.Column("image", sa.Text),
-        *timestamps(),
-    )
-    op.execute(
-        """
-        CREATE TRIGGER update_staff_modtime
-            BEFORE UPDATE
-            ON staff
+            ON stores
             FOR EACH ROW
         EXECUTE PROCEDURE update_updated_at_column();
         """
@@ -168,11 +118,9 @@ def create_staff_table() -> None:
 
 def upgrade() -> None:
     create_updated_at_trigger()
-    create_customers_table()
-    create_staff_table()
+    create_stores_table()
 
 
 def downgrade() -> None:
-    op.drop_table("customers")
-    op.drop_table("staff")
+    op.drop_table("stores")
     op.execute("DROP FUNCTION update_updated_at_column")

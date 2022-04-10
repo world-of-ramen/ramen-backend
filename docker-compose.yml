@@ -7,7 +7,7 @@ services:
     ports:
       - "8000:8000"
     environment:
-      DATABASE_URL: "postgresql://postgres:postgres@db/holo"
+      DATABASE_URL: "postgresql://postgres:postgres@db/ramen"
     env_file:
       - .env
     depends_on:

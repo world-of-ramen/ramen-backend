@@ -22,7 +22,7 @@ class AppSettings(BaseAppSettings):
 
     openapi_url: str = "/openapi.json"
     redoc_url: str = "/redoc"
-    title: str = "Holo application"
+    title: str = "World of ramen application"
     version: str = "0.0.0"
 
     database_url: PostgresDsn

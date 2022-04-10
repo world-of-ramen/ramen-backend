@@ -1,5 +1,5 @@
-# Title
-XXX System
+# World of Ramen
+World of Ramen Backend System
 ## install python
 - Install python3.8 (Example: https://stringpiggy.hpd.io/mac-osx-python3-multiple-pyenv-install/)
 - Install python3.6 (Example: https://stdworkflow.com/433/macos-installs-multiple-versions-of-python)
@@ -28,9 +28,14 @@ XXX System
 - Run this command `pre-commit run --verbose --all-files`
 ## db schema
 - Run this command `alembic upgrade head` if table hasn't yet created
-
+- Note that if you run `alembic upgrade head` with error `ModuleNotFoundError: No module named 'app'` try `PYTHONPATH=. alembic upgrade head`
+- ImportError issue: `https://stackoverflow.com/questions/33821470/importing-app-when-using-alembic-raises-importerror`
+- update schema EX: `alembic revision -m "create xxx table"`
+- downgrade schema EX: `PYTHONPATH=. alembic downgrade -1`
 ## alembic example
 - reference: `https://alembic.sqlalchemy.org/en/latest/tutorial.html#`
+- migration: `https://alembic.sqlalchemy.org/en/latest/tutorial.html#create-a-migration-script`
+
 ## db example sql
 select currval('plan_attachments_id_seq')
 select setval('plan_attachments_id_seq', (select max(id) from plan_attachments)+1)
@@ -46,7 +51,7 @@ select currval('commentaries_id_seq')
 select setval('commentaries_id_seq', (select max(id) from commentaries)+1)
 
 ## Run db
-- `export POSTGRES_DB=rwdb POSTGRES_PORT=5432 POSTGRES_USER=postgres POSTGRES_PASSWORD=postgres`
+- `export POSTGRES_DB=ramen POSTGRES_PORT=5432 POSTGRES_USER=postgres POSTGRES_PASSWORD=postgres`
 - `docker run --name pgdb --rm -e POSTGRES_USER="$POSTGRES_USER" -e POSTGRES_PASSWORD="$POSTGRES_PASSWORD" -e POSTGRES_DB="$POSTGRES_DB" postgres -p 5432:5432`
 - `export POSTGRES_HOST=$(docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' pgdb) createdb --host=$POSTGRES_HOST --port=$POSTGRES_PORT --username=$POSTGRES_USER $POSTGRES_DB`
 
@@ -56,7 +61,7 @@ Quickstart
 
 First, run ``PostgreSQL``, set environment variables and create database. For example using ``docker``: ::
 
-    export POSTGRES_DB=rwdb POSTGRES_PORT=5432 POSTGRES_USER=postgres POSTGRES_PASSWORD=postgres
+    export POSTGRES_DB=ramen POSTGRES_PORT=5432 POSTGRES_USER=postgres POSTGRES_PASSWORD=postgres
     docker run --name pgdb --rm -e POSTGRES_USER="$POSTGRES_USER" -e POSTGRES_PASSWORD="$POSTGRES_PASSWORD" -e POSTGRES_DB="$POSTGRES_DB" postgres
     export POSTGRES_HOST=$(docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' pgdb)
     createdb --host=$POSTGRES_HOST --port=$POSTGRES_PORT --username=$POSTGRES_USER $POSTGRES_DB
@@ -74,6 +79,7 @@ Then create ``.env`` file (or rename and modify ``.env.example``) in project roo
     echo APP_ENV=dev
     echo DATABASE_URL=postgresql://$POSTGRES_USER:$POSTGRES_PASSWORD@$POSTGRES_HOST:$POSTGRES_PORT/$POSTGRES_DB >> .env
     echo SECRET_KEY=$(openssl rand -hex 32) >> .env
+    echo BUCKET_NAME=world-of-ramen >> .env
 
 To run the web application in debug use::
 

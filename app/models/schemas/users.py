@@ -5,10 +5,10 @@ from pydantic import EmailStr
 from pydantic import HttpUrl
 
 from app.models.domain.users import User
-from app.models.schemas.rwschema import RWSchema
+from app.models.schemas.ramenschema import RamenSchema
 
 
-class UserInLogin(RWSchema):
+class UserInLogin(RamenSchema):
     email: EmailStr
     password: str
 
@@ -29,5 +29,5 @@ class UserWithToken(User):
     token: str
 
 
-class UserInResponse(RWSchema):
+class UserInResponse(RamenSchema):
     user: UserWithToken

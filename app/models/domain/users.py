@@ -2,11 +2,11 @@ from typing import Optional
 
 from app.models.common import DateTimeModelMixin
 from app.models.common import IDModelMixin
-from app.models.domain.rwmodel import HoloModel
+from app.models.domain.ramenmodel import RamenModel
 from app.services import security
 
 
-class User(HoloModel):
+class User(RamenModel):
     username: str
     email: str
     bio: str = ""
