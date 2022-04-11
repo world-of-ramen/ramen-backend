@@ -7,7 +7,9 @@ from asyncpg import Connection, Record
 class StoresQueriesMixin:
     async def get_store_by_id(self, conn: Connection, *, id: int) -> Record: ...
     async def get_stores(self, conn: Connection, limit: int, offset: int) -> Record: ...
-    async def get_store_list(self, conn: Connection, limit: int, offset: int) -> Record: ...
+    async def get_store_list(
+        self, conn: Connection, limit: int, offset: int
+    ) -> Record: ...
     async def create_store(
         self,
         conn: Connection,
@@ -45,14 +47,11 @@ class StoresQueriesMixin:
 class UsersQueriesMixin:
     async def get_user_by_id(self, conn: Connection, *, id: int) -> Record: ...
     async def get_users(self, conn: Connection, limit: int, offset: int) -> Record: ...
-    async def get_user_by_wallet_address(self, conn: Connection, *, wallet_address: str) -> Record: ...
+    async def get_user_by_wallet_address(
+        self, conn: Connection, *, wallet_address: str
+    ) -> Record: ...
     async def create_new_user(
-        self,
-        conn: Connection,
-        *,
-        wallet_address: str,
-        image: str,
-        status: int
+        self, conn: Connection, *, wallet_address: str, image: str, status: int
     ) -> Record: ...
     async def update_user_by_id(
         self,
@@ -92,8 +91,6 @@ class ProfilesQueriesMixin:
     async def get_user_plan_applied_count(
         self, conn: Connection, *, uid: str
     ) -> Record: ...
-
-
 
 class Queries(
     StoresQueriesMixin,

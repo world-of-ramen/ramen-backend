@@ -47,10 +47,14 @@ async def login(
         )
 
         if user is None:
-            user = await users_repo.create_user(wallet_address=user_login.wallet_address)
+            user = await users_repo.create_user(
+                wallet_address=user_login.wallet_address
+            )
 
     except (ValidationError, ExpiredMessage, MalformedSession, InvalidSignature):
-        raise HTTPException(status_code=HTTP_400_BAD_REQUEST, detail=strings.INCORRECT_LOGIN_INPUT)
+        raise HTTPException(
+            status_code=HTTP_400_BAD_REQUEST, detail=strings.INCORRECT_LOGIN_INPUT
+        )
 
     token = jwt.create_access_token_for_user(
         user, str(settings.secret_key.get_secret_value())
