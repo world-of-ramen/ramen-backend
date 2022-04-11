@@ -1,12 +1,13 @@
-# from typing import Optional
 from fastapi import APIRouter
 from fastapi import Body
 from fastapi import Depends
+from fastapi import Path
 from fastapi import Query
 
 from app.api.dependencies.database import get_repository
 from app.api.dependencies.stores import get_store_by_id_from_path
 from app.db.repositories.stores import StoresRepository
+from app.models.domain.google import PlaceInfo
 from app.models.domain.stores import Store
 from app.models.schemas.stores import StoreInCreate
 from app.models.schemas.stores import StoreInResponse
@@ -14,12 +15,6 @@ from app.models.schemas.stores import StoreInUpdate
 from app.models.schemas.stores import StoreListResponse
 from app.resources import status
 
-# from fastapi import HTTPException
-# from app.core.config import get_app_settings
-
-# from app.resources import strings
-
-# from starlette.status import HTTP_400_BAD_REQUEST
 
 router = APIRouter()
 
@@ -33,6 +28,20 @@ async def retrieve_store_list(
     stores = await stores_repo.get_store_list(limit=limit, offset=offset)
 
     return stores
+
+
+@router.get(
+    "/place_id/{name}",
+    response_model=PlaceInfo,
+    name="store:get-google-place-id-by-store-id",
+)
+async def retrieve_place_id_by_store_id(
+    # staff: Staff = Depends(get_current_staff_authorizer()),
+    name: str = Path(..., description="店名：例：麵屋吉光"),
+    stores_repo: StoresRepository = Depends(get_repository(StoresRepository)),
+) -> PlaceInfo:
+    place_info = await stores_repo._get_google_place_id_by_name(name=name)
+    return place_info
 
 
 @router.get("/{id}", response_model=StoreInResponse, name="store:get-store-by-id")

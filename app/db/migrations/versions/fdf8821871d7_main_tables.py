@@ -104,6 +104,14 @@ def create_stores_table() -> None:
             comment="Ex: google_place_id",
         ),
         sa.Column(
+            "location",
+            JSONB,
+            unique=False,
+            nullable=True,
+            index=False,
+            comment='Ex:{"lat": 24.7837158, "lng": 121.0197911}',
+        ),
+        sa.Column(
             "status",
             sa.Integer,
             nullable=False,

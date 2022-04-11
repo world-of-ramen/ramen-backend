@@ -5,6 +5,7 @@ from pydantic import BaseModel
 
 from app.models.domain.business_hours import BusinessHours
 from app.models.domain.image import Image
+from app.models.domain.location import Location
 from app.models.domain.social_media import SocialMedia
 from app.models.domain.stores import Store
 from app.models.schemas.ramenschema import RamenSchema
@@ -20,6 +21,7 @@ class StoreInCreate(BaseModel):
     social_media: Optional[SocialMedia] = None
     business_hours: Optional[BusinessHours] = None
     place_id: Optional[str] = None
+    location: Optional[Location] = None
     status: int = 1
 
 
@@ -33,6 +35,7 @@ class StoreInUpdate(BaseModel):
     social_media: Optional[SocialMedia] = None
     business_hours: Optional[BusinessHours] = None
     place_id: Optional[str] = None
+    location: Optional[Location] = None
     status: Optional[int] = None
 
 
