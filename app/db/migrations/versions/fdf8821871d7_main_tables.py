@@ -97,6 +97,13 @@ def create_stores_table() -> None:
             comment="Ex:{'mo': '星期一 11:00-14:00 17:00-23:00', 'tu': '星期二 11:00-14:00 17:00-23:00'}",
         ),
         sa.Column(
+            "place_id",
+            sa.Text,
+            nullable=True,
+            index=False,
+            comment="Ex: google_place_id",
+        ),
+        sa.Column(
             "status",
             sa.Integer,
             nullable=False,

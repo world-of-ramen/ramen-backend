@@ -17,4 +17,5 @@ class Store(IDModelMixin, DateTimeModelMixin, RamenModel):
     image: Optional[Image] = None
     social_media: Optional[SocialMedia] = None
     business_hours: Optional[BusinessHours] = None
+    place_id: Optional[str] = None
     status: int

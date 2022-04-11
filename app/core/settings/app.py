@@ -43,6 +43,8 @@ class AppSettings(BaseAppSettings):
     loggers: Tuple[str, str] = ("uvicorn.asgi", "uvicorn.access")
 
     bucket_name: str = ""
+    google_api_key: str = ""
+    use_google_place_api: bool = False
 
     class Config:
         validate_assignment = True

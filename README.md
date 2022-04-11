@@ -175,3 +175,60 @@ Application parts are:
     ├── resources        - strings that are used in web responses.
     ├── services         - logic that is not just crud related.
     └── main.py          - FastAPI application creation and configuration.
+
+
+Example
+-------
+
+Create a store:
+
+::
+curl -X 'POST' \
+  'http://localhost:8000/api/store' \
+  -H 'accept: application/json' \
+  -H 'Content-Type: application/json' \
+  -d '{
+  "store": {
+    "name": "麵屋吉光",
+    "phone": "0912345678",
+    "address": "300新竹市東區關新東路138號1樓",
+    "rating": 4.5,
+    "place_id": "ChIJ9UlJNeA3aDQRQUVwgiMJhm8",
+    "review_count": 100,
+    "image": {
+      "style": "cover",
+      "url": "https://lh5.googleusercontent.com/p/AF1QipN6j0ksXQ0jmPcvbgvRSHE8SBYu9tmMs6xlVw0I=w408-h305-k-no",
+      "width": "400",
+      "height": "400",
+      "contentType": "image/png"
+    },
+    "social_media": {
+      "facebook": "https://www.facebook.com/ramenkikkou"
+    },
+    "business_hours": {
+      "mo": "星期一 17:00–21:00",
+      "tu": "星期二 17:00–21:00",
+      "we": "星期三 17:00–21:00",
+      "th": "星期四 17:00–21:00",
+      "fr": "星期五 17:00–21:00",
+      "sa": "休息",
+      "su": "星期日 17:00–21:00"
+    },
+    "place_id": ChIJ9UlJNeA3aDQRQUVwgiMJhm8,
+    "status": 1
+  }
+}'
+
+Create an user:
+
+::
+curl -X 'POST' \
+  'http://localhost:8000/api/auth/register' \
+  -H 'accept: application/json' \
+  -H 'Content-Type: application/json' \
+  -d '{
+  "user": {
+    "wallet_address": "0x1234567890",
+    "image": "https://cdn0.techbang.com/system/excerpt_images/93045/post_inpage/ad5d7ded784b3c54562d4ee73d89dd79.jpg?1640747883"
+  }
+}'

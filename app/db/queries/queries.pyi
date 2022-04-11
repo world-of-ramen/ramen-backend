@@ -20,6 +20,7 @@ class StoresQueriesMixin:
         image: Optional[str],
         social_media: Optional[str],
         business_hours: Optional[str],
+        place_id: Optional[str],
         status: int,
     ) -> Record: ...
     async def update_store_by_id(
@@ -35,6 +36,7 @@ class StoresQueriesMixin:
         new_image: Optional[str],
         new_social_meida: Optional[str],
         new_business_hours: Optional[str],
+        new_place_id: Optional[str],
         new_status: Optional[int],
     ) -> Record: ...
 

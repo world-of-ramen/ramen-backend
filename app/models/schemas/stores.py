@@ -19,6 +19,7 @@ class StoreInCreate(BaseModel):
     image: Optional[Image] = None
     social_media: Optional[SocialMedia] = None
     business_hours: Optional[BusinessHours] = None
+    place_id: Optional[str] = None
     status: int = 1
 
 
@@ -31,6 +32,7 @@ class StoreInUpdate(BaseModel):
     image: Optional[Image] = None
     social_media: Optional[SocialMedia] = None
     business_hours: Optional[BusinessHours] = None
+    place_id: Optional[str] = None
     status: Optional[int] = None
 
 
