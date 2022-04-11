@@ -23,6 +23,7 @@ google-cloud-storage = "^2.2.1"
 python-multipart = "^0.0.5"
 PyJWT = "^2.3.0"
 googlemaps = "^4.6.0"
+siwe = "^1.0.1"
 
 [tool.poetry.dev-dependencies]
 alembic = "^1.7.4"

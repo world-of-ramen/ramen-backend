@@ -7,6 +7,8 @@ from app.models.schemas.ramenschema import RamenSchema
 
 
 class UserInLogin(RamenSchema):
+    message: str
+    signature: str
     wallet_address: str
 
 
@@ -29,3 +31,7 @@ class UserInResponse(RamenSchema):
 
 class UserByIdInResponse(RamenSchema):
     user: User
+
+
+class Nonce(BaseModel):
+    nonce: str

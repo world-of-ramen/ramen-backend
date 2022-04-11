@@ -14,16 +14,14 @@ class UsersRepository(BaseRepository):
 
         raise EntityDoesNotExist(f"user with id {id} does not exist")
 
-    async def get_user_by_wallet_address(self, *, wallet_address: str) -> User:
+    async def get_user_by_wallet_address(self, *, wallet_address: str) -> Optional[User]:
         user_row = await queries.get_user_by_wallet_address(
             self.connection, wallet_address=wallet_address
         )
         if user_row:
             return User(**user_row)
-
-        raise EntityDoesNotExist(
-            f"user with wallet_address {wallet_address} does not exist"
-        )
+        else:
+            return None
 
     async def create_user(
         self, *, wallet_address: str, image: Optional[str] = None

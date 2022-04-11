@@ -25,7 +25,7 @@ def create_jwt_token(
 
 def create_access_token_for_user(user: User, secret_key: str) -> str:
     return create_jwt_token(
-        jwt_content=JWTUser(id=user.id_).dict(),
+        jwt_content=JWTUser(id=user.id_, wallet_address=user.wallet_address).dict(),
         secret_key=secret_key,
         expires_delta=timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES),
     )
