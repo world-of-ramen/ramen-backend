@@ -9,9 +9,10 @@ from app.db.errors import EntityDoesNotExist
 from app.db.queries.queries import queries
 from app.db.repositories.base import BaseRepository
 from app.models.domain.business_hours import BusinessHours
-from app.models.domain.google import Place
-from app.models.domain.google import PlaceId
+from app.models.domain.google import PlaceInfo
+from app.models.domain.google import PlaceSummary
 from app.models.domain.image import Image
+from app.models.domain.location import Location
 from app.models.domain.social_media import SocialMedia
 from app.models.domain.stores import Store
 from app.models.schemas.stores import StoreListResponse
@@ -74,6 +75,9 @@ class StoresRepository(BaseRepository):
             if store_row["business_hours"]
             else None,
             place_id=place_id,
+            location=json.loads(store_row["location"])
+            if store_row["location"]
+            else None,
             status=store_row["status"],
             created_at=store_row["created_at"],
             updated_at=store_row["updated_at"],
@@ -94,6 +98,7 @@ class StoresRepository(BaseRepository):
         social_media: Optional[SocialMedia] = None,
         business_hours: Optional[BusinessHours] = None,
         place_id: Optional[str] = None,
+        location: Optional[Location] = None,
         status: int,
     ) -> Store:
         new_store = Store(
@@ -106,6 +111,7 @@ class StoresRepository(BaseRepository):
             social_media=social_media,
             business_hours=business_hours,
             place_id=place_id,
+            location=location,
             status=status,
         )
 
@@ -121,6 +127,7 @@ class StoresRepository(BaseRepository):
                 social_media=json.dumps(social_media) if social_media else None,
                 business_hours=json.dumps(business_hours) if business_hours else None,
                 place_id=place_id,
+                location=json.dumps(location) if location else None,
                 status=status,
             )
 
@@ -139,6 +146,7 @@ class StoresRepository(BaseRepository):
         social_media: Optional[SocialMedia] = None,
         business_hours: Optional[BusinessHours] = None,
         place_id: Optional[str] = None,
+        location: Optional[Location] = None,
         status: Optional[int] = None,
     ) -> Store:
         store_in_db.name = name or store_in_db.name
@@ -148,10 +156,11 @@ class StoresRepository(BaseRepository):
         store_in_db.review_count = (
             review_count if review_count is not None else store_in_db.review_count
         )
-        store_in_db.image = image if image is not None else store_in_db.image
+        store_in_db.image = image or store_in_db.image
         store_in_db.social_media = social_media or store_in_db.social_media
         store_in_db.business_hours = business_hours or store_in_db.business_hours
         store_in_db.place_id = place_id or store_in_db.place_id
+        store_in_db.location = location or store_in_db.location
         store_in_db.status = status if status is not None else store_in_db.status
 
         new_image = None
@@ -172,6 +181,12 @@ class StoresRepository(BaseRepository):
         elif store_in_db.business_hours:
             new_business_hours = json.dumps(store_in_db.business_hours.__dict__)
 
+        new_location = None
+        if location:
+            new_location = json.dumps(store_in_db.location)
+        elif store_in_db.location:
+            new_location = json.dumps(store_in_db.location.__dict__)
+
         async with self.connection.transaction():
             store_in_db.updated_at = await queries.update_store_by_id(
                 self.connection,
@@ -185,12 +200,13 @@ class StoresRepository(BaseRepository):
                 new_social_media=new_social_media,
                 new_business_hours=new_business_hours,
                 new_place_id=store_in_db.place_id,
+                new_location=new_location,
                 new_status=store_in_db.status,
             )
 
         return store_in_db
 
-    async def _get_google_place_id_by_name(self, *, name: str) -> PlaceId:
+    async def _get_google_place_id_by_name(self, *, name: str) -> PlaceInfo:
         gmaps = googlemaps.Client(key=SETTINGS.google_api_key)
         g_results = gmaps.places(name)
         place_id = (
@@ -198,12 +214,28 @@ class StoresRepository(BaseRepository):
             if "results" in g_results and "place_id" in g_results["results"][0]
             else None
         )
+        lat = (
+            g_results["results"][0]["geometry"]["location"]["lat"]
+            if "results" in g_results
+            and "geometry" in g_results["results"][0]
+            and "location" in g_results["results"][0]["geometry"]
+            and "lat" in g_results["results"][0]["geometry"]["location"]
+            else None
+        )
+        lng = (
+            g_results["results"][0]["geometry"]["location"]["lng"]
+            if "results" in g_results
+            and "geometry" in g_results["results"][0]
+            and "location" in g_results["results"][0]["geometry"]
+            and "lng" in g_results["results"][0]["geometry"]["location"]
+            else None
+        )
 
-        return PlaceId(place_id=place_id)
+        return PlaceInfo(place_id=place_id, location=Location(lat=lat, lng=lng))
 
     async def _get_rating_n_reviews_by_place_id_from_google(
         self, *, place_id: str
-    ) -> Place:
+    ) -> PlaceSummary:
         gmaps = googlemaps.Client(key=SETTINGS.google_api_key)
         g_result = gmaps.place(place_id=place_id)
         rating = (
@@ -217,4 +249,4 @@ class StoresRepository(BaseRepository):
             else 0
         )
 
-        return Place(rating=rating, review_count=review_count)
+        return PlaceSummary(rating=rating, review_count=review_count)

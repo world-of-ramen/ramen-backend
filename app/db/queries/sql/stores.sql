@@ -9,6 +9,7 @@ SELECT id,
        social_media,
        business_hours,
        place_id,
+       location,
        status,
        created_at,
        updated_at
@@ -30,6 +31,7 @@ FROM (
         social_media,
         business_hours,
         place_id,
+        location,
         status,
         created_at,
         updated_at
@@ -40,8 +42,8 @@ LIMIT :limit
 OFFSET :offset;
 
 -- name: create-store<!
-INSERT INTO stores (name, phone, address, rating, review_count, image, social_media, business_hours, place_id, status)
-VALUES (:name, :phone, :address, :rating, :review_count, :image, :social_media, :business_hours, :place_id, :status)
+INSERT INTO stores (name, phone, address, rating, review_count, image, social_media, business_hours, place_id, location, status)
+VALUES (:name, :phone, :address, :rating, :review_count, :image, :social_media, :business_hours, :place_id, :location, :status)
 RETURNING
     id, created_at, updated_at;
 
@@ -57,6 +59,7 @@ SET name           = :new_name,
     social_media   = :new_social_media,
     business_hours = :new_business_hours,
     place_id       = :new_place_id,
+    location       = :new_location,
     status         = :new_status
 WHERE id = :id
 RETURNING

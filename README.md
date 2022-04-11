@@ -214,7 +214,10 @@ curl -X 'POST' \
       "sa": "休息",
       "su": "星期日 17:00–21:00"
     },
-    "place_id": ChIJ9UlJNeA3aDQRQUVwgiMJhm8,
+    "location": {
+      "lat": 24.7837158,
+      "lng": 121.0197911
+    },
     "status": 1
   }
 }'
