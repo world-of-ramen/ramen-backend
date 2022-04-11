@@ -10,6 +10,7 @@ from app.db.queries.queries import queries
 from app.db.repositories.base import BaseRepository
 from app.models.domain.business_hours import BusinessHours
 from app.models.domain.google import Place
+from app.models.domain.google import PlaceId
 from app.models.domain.image import Image
 from app.models.domain.social_media import SocialMedia
 from app.models.domain.stores import Store
@@ -188,6 +189,17 @@ class StoresRepository(BaseRepository):
             )
 
         return store_in_db
+
+    async def _get_google_place_id_by_name(self, *, name: str) -> PlaceId:
+        gmaps = googlemaps.Client(key=SETTINGS.google_api_key)
+        g_results = gmaps.places(name)
+        place_id = (
+            g_results["results"][0]["place_id"]
+            if "results" in g_results and "place_id" in g_results["results"][0]
+            else None
+        )
+
+        return PlaceId(place_id=place_id)
 
     async def _get_rating_n_reviews_by_place_id_from_google(
         self, *, place_id: str
