@@ -175,7 +175,14 @@ def create_nfts_table() -> None:
     op.create_table(
         "nfts",
         sa.Column("id", sa.Integer, primary_key=True),
-        sa.Column("user_id", sa.Integer, unique=False, nullable=False, index=True),
+        sa.Column(
+            "user_id",
+            sa.Integer,
+            sa.ForeignKey("users.id", ondelete="CASCADE"),
+            unique=False,
+            nullable=False,
+            index=True,
+        ),
         sa.Column(
             "wallet_address",
             sa.Text,
@@ -224,9 +231,9 @@ def create_nfts_table() -> None:
     )
     op.execute(
         """
-        CREATE TRIGGER update_users_modtime
+        CREATE TRIGGER update_nfts_modtime
             BEFORE UPDATE
-            ON users
+            ON nfts
             FOR EACH ROW
         EXECUTE PROCEDURE update_updated_at_column();
         """
