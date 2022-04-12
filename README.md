@@ -1,15 +1,37 @@
 # World of Ramen
 World of Ramen Backend System
 ## install python
+- Install python3.9 (Example: https://www.python.org/downloads/macos/)
 - Install python3.8 (Example: https://stringpiggy.hpd.io/mac-osx-python3-multiple-pyenv-install/)
 - Install python3.6 (Example: https://stdworkflow.com/433/macos-installs-multiple-versions-of-python)
+- If pyenv doesn't work, you should run the command below and `source` it:
+```
+echo 'eval "$(pyenv init --path)"' >> ~/.zprofile
+echo 'eval "$(pyenv init -)"' >> ~/.zshrc
+```
+
 ## venv
-- `pyenv shell 3.8.8`
+- `use python3.9`
+- `python3.9 -m venv venv`
+- `. venv/bin/activate`
+- `python -V (check python version)`
+- `pip install --upgrade pip`
+- `pip install poetry`
+- `please check poetry's path to make sure it's from python3.9: run *which poetry*`
+- `the correct venv's poetry path would like: /Users/kangchih/world-of-ramen/ramen-backend/venv/bin/poetry`
+- `if not, deactivate the venv and enter again: run *deactivate*`
+- `poetry install`
+
+- `use pyenv`
+- `pyenv shell 3.9.2`
 - `pyenv init`
 - `eval "$(pyenv init -)"`
 - `python -m venv venv`
 - `. venv/bin/activate`
 - `pip install --upgrade pip`
+- `please check poetry's path to make sure it's from python3.9: run *which poetry*`
+- `the correct venv's poetry path would like: /Users/kangchih/world-of-ramen/ramen-backend/venv/bin/poetry`
+- `if not, deactivate the venv and enter again: run *deactivate*`
 - `pip install poetry`
 - `poetry install`
 
