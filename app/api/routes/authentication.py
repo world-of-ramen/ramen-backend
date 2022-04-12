@@ -12,7 +12,7 @@ from siwe.siwe import SiweMessage
 from siwe.siwe import ValidationError
 from starlette.status import HTTP_200_OK
 from starlette.status import HTTP_400_BAD_REQUEST
-from starlette.status import HTTP_401_UNAUTHORIZED
+from starlette.status import HTTP_403_FORBIDDEN
 
 from app.api.dependencies.database import get_repository
 from app.core.config import get_app_settings
@@ -58,7 +58,7 @@ async def login(
         )
     except (ValidationError, ExpiredMessage, MalformedSession, InvalidSignature):
         raise HTTPException(
-            status_code=HTTP_401_UNAUTHORIZED, detail=strings.MALFORMED_PAYLOAD
+            status_code=HTTP_403_FORBIDDEN, detail=strings.MALFORMED_PAYLOAD
         )
 
     token = jwt.create_access_token_for_user(

@@ -63,6 +63,37 @@ class UsersQueriesMixin:
         new_status: Optional[int],
     ) -> Record: ...
 
+class NFTsQueriesMixin:
+    async def get_nft_by_id(self, conn: Connection, *, id: int) -> Record: ...
+    async def get_nft(
+        self,
+        conn: Connection,
+        *,
+        user_id: int,
+        wallet_address: str,
+        token_address: str,
+        token_id: int,
+    ) -> Record: ...
+    async def create_new_nft(
+        self,
+        conn: Connection,
+        *,
+        user_id: int,
+        wallet_address: str,
+        image_url: str,
+        token_address: str,
+        token_id: int,
+        name: str,
+        symbol: str,
+    ) -> Record: ...
+    async def update_nft_by_id(
+        self,
+        conn: Connection,
+        *,
+        id: int,
+        image_url: str,
+    ) -> Record: ...
+
 class ProfilesQueriesMixin:
     async def is_user_following_for_another(
         self, conn: Connection, *, follower_uid: str, following_uid: str
@@ -96,6 +127,7 @@ class Queries(
     StoresQueriesMixin,
     UsersQueriesMixin,
     ProfilesQueriesMixin,
+    NFTsQueriesMixin,
 ): ...
 
 queries: Queries

@@ -6,6 +6,9 @@ from starlette.status import HTTP_400_BAD_REQUEST
 from app.api.dependencies.authentication import get_current_user_authorizer
 from app.api.dependencies.database import get_repository
 from app.api.dependencies.profiles import get_profile_by_username_from_path
+from app.api.dependencies.profiles import get_user_nft
+from app.core.config import get_app_settings
+from app.core.settings.app import AppSettings
 from app.db.repositories.profiles import ProfilesRepository
 from app.models.domain.profiles import Profile
 from app.models.domain.users import User
@@ -15,12 +18,13 @@ from app.resources import strings
 router = APIRouter()
 
 
-@router.get(
-    "/{username}", response_model=ProfileInResponse, name="profiles:get-profile"
-)
-async def retrieve_profile_by_username(
-    profile: Profile = Depends(get_profile_by_username_from_path),
+@router.get("/nfts", response_model=ProfileInResponse, name="profiles:get-nfts")
+async def retrieve_nfts(
+    user: User = Depends(get_current_user_authorizer()),
+    settings: AppSettings = Depends(get_app_settings),
 ) -> ProfileInResponse:
+    nfts = await get_user_nft(user_id=user.id_, wallet_address=user.wallet_address)
+    profile = Profile(user_id=user.id_, wallet_address=user.wallet_address, nfts=nfts)
     return ProfileInResponse(profile=profile)
 
 
