@@ -1,21 +1,17 @@
-from typing import List
 from typing import Optional
 
 from fastapi import Depends
 from fastapi import HTTPException
 from fastapi import Path
-from starlette import status
 from starlette.status import HTTP_404_NOT_FOUND
 
 from app.api.dependencies.authentication import get_current_user_authorizer
 from app.api.dependencies.database import get_repository
 from app.db.errors import EntityDoesNotExist
 from app.db.repositories.profiles import ProfilesRepository
-from app.models.domain.nfts import NFT
 from app.models.domain.profiles import Profile
 from app.models.domain.users import User
 from app.resources import strings
-from app.services import nft
 
 
 async def get_profile_by_username_from_path(
@@ -30,16 +26,4 @@ async def get_profile_by_username_from_path(
     except EntityDoesNotExist:
         raise HTTPException(
             status_code=HTTP_404_NOT_FOUND, detail=strings.USER_DOES_NOT_EXIST_ERROR
-        )
-
-
-async def get_user_nft(
-    user_id: int,
-    wallet_address: str,
-) -> List[NFT]:
-    try:
-        return await nft.get_all_nft(wallet_address=wallet_address, user_id=user_id)
-    except ValueError:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN, detail=strings.MALFORMED_PAYLOAD
         )

@@ -2,10 +2,8 @@ import json
 from typing import List
 
 import requests
-from fastapi import Depends
 from requests.structures import CaseInsensitiveDict
 
-from app.api.dependencies.database import get_repository
 from app.db.errors import EntityDoesNotExist
 from app.db.repositories.nfts import NFTsRepository
 from app.models.domain.nfts import NFT
@@ -20,7 +18,7 @@ headers[
 async def get_all_nft(
     wallet_address: str,
     user_id: int,
-    nfts_repo: NFTsRepository = Depends(get_repository(NFTsRepository)),
+    nfts_repo: NFTsRepository,
 ) -> List[NFT]:
     url = f"https://deep-index.moralis.io/api/v2/{wallet_address}/nft?chain=eth&format=decimal"
     resp = requests.get(url, headers=headers)

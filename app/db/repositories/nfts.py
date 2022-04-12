@@ -15,7 +15,7 @@ class NFTsRepository(BaseRepository):
     async def get_nft(
         self, *, user_id: int, wallet_address: str, token_address: str, token_id: int
     ) -> NFT:
-        row = await queries.get_nft_by_id(
+        row = await queries.get_nft(
             self.connection,
             user_id=user_id,
             wallet_address=wallet_address,
