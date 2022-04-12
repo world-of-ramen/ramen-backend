@@ -29,7 +29,7 @@ async def get_all_nft(
             if r["metadata"] is None:
                 continue
             token_address = r["token_address"]
-            token_id = r["token_id"]
+            token_id = int(r["token_id"])
             name = r["name"]
             symbol = r["symbol"]
             dict = json.loads(r["metadata"])
@@ -41,7 +41,7 @@ async def get_all_nft(
                     token_address=token_address,
                     token_id=token_id,
                 )
-                nft = nfts_repo.update_nft(id=nft.id_, image_url=image_url)
+                nft = await nfts_repo.update_nft(id=nft.id_, image_url=image_url)
                 list.append(nft)
             except EntityDoesNotExist:
                 nft = await nfts_repo.create_nft(

@@ -58,6 +58,9 @@ echo 'eval "$(pyenv init -)"' >> ~/.zshrc
 - reference: `https://alembic.sqlalchemy.org/en/latest/tutorial.html#`
 - migration: `https://alembic.sqlalchemy.org/en/latest/tutorial.html#create-a-migration-script`
 
+## AIOSQL
+- read the doc: https://nackjicholson.github.io/aiosql/
+
 ## db example sql
 select currval('plan_attachments_id_seq')
 select setval('plan_attachments_id_seq', (select max(id) from plan_attachments)+1)

@@ -65,6 +65,9 @@ class UsersQueriesMixin:
 
 class NFTsQueriesMixin:
     async def get_nft_by_id(self, conn: Connection, *, id: int) -> Record: ...
+    async def get_nfts_by_user_id(
+        self, conn: Connection, *, user_id: int
+    ) -> Record: ...
     async def get_nft(
         self,
         conn: Connection,
@@ -91,7 +94,7 @@ class NFTsQueriesMixin:
         conn: Connection,
         *,
         id: int,
-        image_url: str,
+        new_image_url: Optional[str],
     ) -> Record: ...
 
 class ProfilesQueriesMixin:

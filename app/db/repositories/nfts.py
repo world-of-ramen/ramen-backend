@@ -1,7 +1,10 @@
+from asyncpg import Record
+
 from app.db.errors import EntityDoesNotExist
 from app.db.queries.queries import queries
 from app.db.repositories.base import BaseRepository
 from app.models.domain.nfts import NFT
+from app.models.schemas.nfts import NftListResponse
 
 
 class NFTsRepository(BaseRepository):
@@ -11,6 +14,27 @@ class NFTsRepository(BaseRepository):
             return NFT(**row)
 
         raise EntityDoesNotExist(f"nft with id {id} does not exist")
+
+    async def get_nfts_by_user_id(self, *, user_id: int) -> NftListResponse:
+        rows = await queries.get_nfts_by_user_id(self.connection, user_id=user_id)
+
+        nfts = [await self._get_nft_from_db_record(row=row) for row in rows]
+
+        return NftListResponse(nfts=nfts)
+
+    async def _get_nft_from_db_record(self, *, row: Record) -> NFT:
+        return NFT(
+            id_=row["id"],
+            user_id=row["user_id"],
+            wallet_address=row["wallet_address"],
+            image_url=row["image_url"],
+            token_address=row["token_address"],
+            token_id=row["token_id"],
+            name=row["name"],
+            symbol=row["symbol"],
+            created_at=row["created_at"],
+            updated_at=row["updated_at"],
+        )
 
     async def get_nft(
         self, *, user_id: int, wallet_address: str, token_address: str, token_id: int
@@ -66,12 +90,12 @@ class NFTsRepository(BaseRepository):
 
     async def update_nft(self, *, id: int, image_url: str) -> NFT:
         nft_in_db = await self.get_nft_by_id(id=id)
-
+        nft_in_db.image_url = image_url or nft_in_db.image_url
         async with self.connection.transaction():
             nft_in_db.updated_at = await queries.update_nft_by_id(
                 self.connection,
                 id=id,
-                image_url=image_url,
+                new_image_url=nft_in_db.image_url,
             )
 
         return nft_in_db

@@ -26,3 +26,5 @@ COMMENT_DOES_NOT_EXIST = "comment does not exist"
 AUTHENTICATION_REQUIRED = "authentication required"
 
 UNABLE_TO_UPLOAD_IMAGE = "upload image failed"
+
+NFT_ERROR = "NFT error"
