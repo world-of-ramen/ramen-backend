@@ -25,6 +25,7 @@ PyJWT = "^2.3.0"
 googlemaps = "^4.6.0"
 siwe = "^1.0.1"
 Cython = "^0.29.28"
+cytoolz = "^0.11.2"
 
 [tool.poetry.dev-dependencies]
 alembic = "^1.7.4"
