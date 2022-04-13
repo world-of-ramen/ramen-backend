@@ -11,14 +11,11 @@ from app.models.schemas.nfts import NFTListResponse
 from app.resources import strings
 from app.services import nft
 
-# from starlette.status import HTTP_400_BAD_REQUEST
-# from app.api.dependencies.profiles import get_profile_by_username_from_path
-# from app.db.repositories.profiles import ProfilesRepository
 
 router = APIRouter()
 
 
-@router.get("/nfts", response_model=NFTListResponse, name="nfts:get-user-nfts")
+@router.get("/list", response_model=NFTListResponse, name="nfts:get-user-nfts")
 async def retrieve_nfts(
     user: User = Depends(get_current_user_authorizer()),
     nfts_repo: NFTsRepository = Depends(get_repository(NFTsRepository)),

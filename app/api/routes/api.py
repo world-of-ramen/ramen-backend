@@ -11,6 +11,6 @@ from app.api.routes import users
 router = APIRouter()
 router.include_router(authentication.router, tags=["authentication"], prefix="/auth")
 router.include_router(users.router, tags=["users"], prefix="/user")
-router.include_router(nfts.router, tags=["profiles"], prefix="/profiles")
+router.include_router(nfts.router, tags=["nfts"], prefix="/nfts")
 router.include_router(stores.router, tags=["stores"], prefix="/store")
 router.include_router(files.router, tags=["files"], prefix="/file")
