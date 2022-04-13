@@ -8,8 +8,12 @@ class DevAppSettings(AppSettings):
 
     title: str = "[DEV] World of Ramen application"
 
-    description: str = "可用此token測試(wallet_address=0x1234567890):\n\n\
-    Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6MSwiZXhwIjoxNjY0MTIzMzkzLCJzdWIiOiJhY2Nlc3MifQ.HULU9of8h9gz_oW6CzDxXvQxOvtE80PdOA-WRRwshcQ"
+    description: str = (
+        "可用此token測試:\n\n"
+        + "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9"
+        + ".eyJpZCI6Miwid2FsbGV0X2FkZHJlc3MiOiIweGExMkQ5NTdDM0VENGEwMjc2YjljZEVkNzQyMjViY2Q2NGM0MTcx"
+        + "MkQiLCJleHAiOjE2NjQzODE0NDcsInN1YiI6ImFjY2VzcyJ9.j2Nm0tQvKwnwZQTi7TbwTar5Sty1k6R0_HOtb0WwVKI"
+    )
 
     logging_level: int = logging.DEBUG
 
