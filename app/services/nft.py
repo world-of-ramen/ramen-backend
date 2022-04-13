@@ -4,15 +4,16 @@ from typing import List
 import requests
 from requests.structures import CaseInsensitiveDict
 
+from app.core.config import get_app_settings
 from app.db.errors import EntityDoesNotExist
 from app.db.repositories.nfts import NFTsRepository
 from app.models.domain.nfts import NFT
 
+SETTINGS = get_app_settings()
+
 headers = CaseInsensitiveDict()
 headers["accept"] = "application/json"
-headers[
-    "X-API-Key"
-] = "UVOA0GGTEBVMZb3nnepdwnND8RQH2j5tNEGyEHh3xjGYhROQKbS7jWHgp3QvOe7r"
+headers["X-API-Key"] = SETTINGS.moralis_api_key
 
 
 async def get_all_nft(
@@ -56,4 +57,4 @@ async def get_all_nft(
                 list.append(nft)
         return list
     else:
-        raise Exception("can not access moralis api")
+        raise Exception("something wrong with moralis api")

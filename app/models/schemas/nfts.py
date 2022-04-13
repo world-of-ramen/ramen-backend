@@ -4,9 +4,9 @@ from app.models.domain.nfts import NFT
 from app.models.schemas.ramenschema import RamenSchema
 
 
-class NftInResponse(RamenSchema):
+class NFTInResponse(RamenSchema):
     nft: NFT
 
 
-class NftListResponse(RamenSchema):
+class NFTListResponse(RamenSchema):
     nfts: List[NFT]

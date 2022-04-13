@@ -46,6 +46,8 @@ class AppSettings(BaseAppSettings):
     google_api_key: str = ""
     use_google_place_api: bool = False
 
+    moralis_api_key: str = ""
+
     class Config:
         validate_assignment = True
 

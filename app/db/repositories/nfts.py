@@ -4,7 +4,7 @@ from app.db.errors import EntityDoesNotExist
 from app.db.queries.queries import queries
 from app.db.repositories.base import BaseRepository
 from app.models.domain.nfts import NFT
-from app.models.schemas.nfts import NftListResponse
+from app.models.schemas.nfts import NFTListResponse
 
 
 class NFTsRepository(BaseRepository):
@@ -15,12 +15,12 @@ class NFTsRepository(BaseRepository):
 
         raise EntityDoesNotExist(f"nft with id {id} does not exist")
 
-    async def get_nfts_by_user_id(self, *, user_id: int) -> NftListResponse:
+    async def get_nfts_by_user_id(self, *, user_id: int) -> NFTListResponse:
         rows = await queries.get_nfts_by_user_id(self.connection, user_id=user_id)
 
         nfts = [await self._get_nft_from_db_record(row=row) for row in rows]
 
-        return NftListResponse(nfts=nfts)
+        return NFTListResponse(nfts=nfts)
 
     async def _get_nft_from_db_record(self, *, row: Record) -> NFT:
         return NFT(
