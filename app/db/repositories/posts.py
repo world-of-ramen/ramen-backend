@@ -1,0 +1,137 @@
+from typing import Optional
+
+from asyncpg import Record
+
+from app.core.config import get_app_settings
+from app.db.errors import EntityDoesNotExist
+from app.db.queries.queries import queries
+from app.db.repositories.base import BaseRepository
+from app.models.domain.posts import Post
+from app.models.schemas.posts import PostListResponse
+
+SETTINGS = get_app_settings()
+
+
+class PostsRepository(BaseRepository):
+    # def __init__(self, conn: Connection) -> None:
+    #     super().__init__(conn)
+    #     self._tags_repo = TagsRepository(conn)
+
+    async def get_post_by_id(self, *, id: int) -> Post:
+        post_row = await queries.get_post_by_id(self.connection, id=id)
+
+        if post_row:
+            return await self._get_post_from_db_record(post_row=post_row)
+
+        raise EntityDoesNotExist(f"post with id {id} does not exist")
+
+    async def get_post_list(
+        self,
+        *,
+        limit: int = 100,
+        offset: int = 0,
+        store_id: Optional[int] = None,
+        user_id: Optional[int] = None,
+    ) -> PostListResponse:
+        post_rows = (
+            await queries.get_posts_by_store_id(
+                self.connection, limit=limit, offset=offset, store_id=store_id
+            )
+            if store_id is not None
+            else await queries.get_posts_by_user_id(
+                self.connection, limit=limit, offset=offset, user_id=user_id
+            )
+        )
+
+        total = (
+            await self._get_post_list_total_from_db_record(post_row=post_rows[0])
+            if post_rows
+            else 0
+        )
+
+        post_list = [
+            await self._get_post_from_db_record(post_row=post_row)
+            for post_row in post_rows
+        ]
+
+        return PostListResponse(posts=post_list, total=total)
+
+    async def _get_post_from_db_record(self, *, post_row: Record) -> Post:
+        return Post(
+            id_=post_row["id"],
+            store_id=post_row["store_id"],
+            user_id=post_row["user_id"],
+            body=post_row["body"],
+            image_url=post_row["image_url"],
+            rating=post_row["rating"],
+            status=post_row["status"],
+            created_at=post_row["created_at"],
+            updated_at=post_row["updated_at"],
+        )
+
+    async def _get_post_list_total_from_db_record(self, *, post_row: Record) -> int:
+        return post_row["total"]
+
+    async def create_new_post(
+        self,
+        *,
+        store_id: int,
+        user_id: Optional[int] = None,
+        body: Optional[str] = None,
+        image_url: Optional[str] = None,
+        rating: Optional[float] = None,
+        status: int = 1,
+    ) -> Post:
+        new_post = Post(
+            store_id=store_id,
+            user_id=user_id,
+            body=body,
+            image_url=image_url,
+            rating=rating,
+            status=status,
+        )
+
+        async with self.connection.transaction():
+            post_row = await queries.create_post(
+                self.connection,
+                store_id=store_id,
+                user_id=user_id,
+                body=body,
+                image_url=image_url,
+                rating=rating,
+                status=status,
+            )
+
+        return new_post.copy(update=dict(post_row))
+
+    async def update_post(
+        self,
+        *,
+        post_in_db: Post,
+        store_id: Optional[int] = None,
+        user_id: Optional[int] = None,
+        body: Optional[str] = None,
+        image_url: Optional[str] = None,
+        rating: Optional[float] = None,
+        status: Optional[int] = None,
+    ) -> Post:
+        post_in_db.store_id = store_id if store_id is not None else post_in_db.store_id
+        post_in_db.user_id = user_id if user_id is not None else post_in_db.user_id
+        post_in_db.body = body or post_in_db.body
+        post_in_db.image_url = image_url or post_in_db.image_url
+        post_in_db.rating = rating if rating is not None else post_in_db.rating
+        post_in_db.status = status if status is not None else post_in_db.status
+
+        async with self.connection.transaction():
+            post_in_db.updated_at = await queries.update_post_by_id(
+                self.connection,
+                id=post_in_db.id_,
+                new_store_id=post_in_db.store_id,
+                new_user_id=post_in_db.user_id,
+                new_body=post_in_db.body,
+                new_image_url=post_in_db.image_url,
+                new_rating=post_in_db.rating,
+                new_status=post_in_db.status,
+            )
+
+        return post_in_db
