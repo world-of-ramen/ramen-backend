@@ -171,13 +171,84 @@ def create_users_table() -> None:
     )
 
 
+def create_nfts_table() -> None:
+    op.create_table(
+        "nfts",
+        sa.Column("id", sa.Integer, primary_key=True),
+        sa.Column(
+            "user_id",
+            sa.Integer,
+            sa.ForeignKey("users.id", ondelete="CASCADE"),
+            unique=False,
+            nullable=False,
+            index=True,
+        ),
+        sa.Column(
+            "wallet_address",
+            sa.Text,
+            unique=False,
+            nullable=False,
+            index=True,
+            comment="Ex: 0x123456789012345678901",
+        ),
+        sa.Column(
+            "image_url",
+            sa.Text,
+            unique=False,
+            nullable=True,
+            index=False,
+            comment="http://oo.jpeg",
+        ),
+        sa.Column(
+            "token_address",
+            sa.Text,
+            nullable=False,
+            index=False,
+            comment="Token address",
+        ),
+        sa.Column(
+            "token_id",
+            sa.Integer,
+            nullable=False,
+            index=False,
+            comment="Token id",
+        ),
+        sa.Column(
+            "name",
+            sa.Text,
+            nullable=False,
+            index=False,
+            comment="NFT name",
+        ),
+        sa.Column(
+            "symbol",
+            sa.Text,
+            nullable=False,
+            index=False,
+            comment="NFT symbol",
+        ),
+        *timestamps(),
+    )
+    op.execute(
+        """
+        CREATE TRIGGER update_nfts_modtime
+            BEFORE UPDATE
+            ON nfts
+            FOR EACH ROW
+        EXECUTE PROCEDURE update_updated_at_column();
+        """
+    )
+
+
 def upgrade() -> None:
     create_updated_at_trigger()
     create_stores_table()
     create_users_table()
+    create_nfts_table()
 
 
 def downgrade() -> None:
     op.drop_table("users")
     op.drop_table("stores")
+    op.drop_table("nfts")
     op.execute("DROP FUNCTION update_updated_at_column")

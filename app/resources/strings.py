@@ -1,12 +1,11 @@
 # API messages
-
 USER_DOES_NOT_EXIST_ERROR = "user does not exist"
 STORE_DOES_NOT_EXIST_ERROR = "store does not exist"
 ARTICLE_DOES_NOT_EXIST_ERROR = "article does not exist"
 ARTICLE_ALREADY_EXISTS = "article already exists"
 USER_IS_NOT_AUTHOR_OF_ARTICLE = "you are not an author of this article"
 
-INCORRECT_LOGIN_INPUT = "incorrect email or password"
+BAD_REQUEST = "bad request"
 USERNAME_TAKEN = "user with this username already exists"
 WALLET_ADDRESS_TAKEN = "user with this wallet address already exists"
 EMAIL_TAKEN = "user with this email already exists"
@@ -27,3 +26,5 @@ COMMENT_DOES_NOT_EXIST = "comment does not exist"
 AUTHENTICATION_REQUIRED = "authentication required"
 
 UNABLE_TO_UPLOAD_IMAGE = "upload image failed"
+
+NFT_ERROR = "NFT error"

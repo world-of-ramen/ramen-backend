@@ -7,7 +7,7 @@ from starlette import status
 from app.db.repositories.profiles import ProfilesRepository
 from app.db.repositories.users import UsersRepository
 from app.models.domain.users import User
-from app.models.schemas.profiles import ProfileInResponse
+from app.models.schemas.profiles import NFTInResponse
 
 pytestmark = pytest.mark.asyncio
 
@@ -18,7 +18,7 @@ async def test_unregistered_user_will_receive_profile_without_following(
     response = await client.get(
         app.url_path_for("profiles:get-profile", username=test_user.username)
     )
-    profile = ProfileInResponse(**response.json())
+    profile = NFTInResponse(**response.json())
     assert profile.profile.username == test_user.username
     assert not profile.profile.following
 
@@ -37,7 +37,7 @@ async def test_user_that_does_not_follows_another_will_receive_profile_without_f
     response = await authorized_client.get(
         app.url_path_for("profiles:get-profile", username=user.username)
     )
-    profile = ProfileInResponse(**response.json())
+    profile = NFTInResponse(**response.json())
     assert profile.profile.username == user.username
     assert not profile.profile.following
 
@@ -61,7 +61,7 @@ async def test_user_that_follows_another_will_receive_profile_with_follow(
     response = await authorized_client.get(
         app.url_path_for("profiles:get-profile", username=user.username)
     )
-    profile = ProfileInResponse(**response.json())
+    profile = NFTInResponse(**response.json())
     assert profile.profile.username == user.username
     assert profile.profile.following
 
@@ -121,7 +121,7 @@ async def test_user_can_change_following_for_another_user(
     response = await authorized_client.get(
         app.url_path_for("profiles:get-profile", username=user.username)
     )
-    profile = ProfileInResponse(**response.json())
+    profile = NFTInResponse(**response.json())
     assert profile.profile.username == user.username
     assert profile.profile.following == following
 

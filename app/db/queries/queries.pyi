@@ -7,7 +7,9 @@ from asyncpg import Connection, Record
 class StoresQueriesMixin:
     async def get_store_by_id(self, conn: Connection, *, id: int) -> Record: ...
     async def get_stores(self, conn: Connection, limit: int, offset: int) -> Record: ...
-    async def get_store_list(self, conn: Connection, limit: int, offset: int) -> Record: ...
+    async def get_store_list(
+        self, conn: Connection, limit: int, offset: int
+    ) -> Record: ...
     async def create_store(
         self,
         conn: Connection,
@@ -45,14 +47,11 @@ class StoresQueriesMixin:
 class UsersQueriesMixin:
     async def get_user_by_id(self, conn: Connection, *, id: int) -> Record: ...
     async def get_users(self, conn: Connection, limit: int, offset: int) -> Record: ...
-    async def get_user_by_wallet_address(self, conn: Connection, *, wallet_address: str) -> Record: ...
+    async def get_user_by_wallet_address(
+        self, conn: Connection, *, wallet_address: str
+    ) -> Record: ...
     async def create_new_user(
-        self,
-        conn: Connection,
-        *,
-        wallet_address: str,
-        image: str,
-        status: int
+        self, conn: Connection, *, wallet_address: str, image: str, status: int
     ) -> Record: ...
     async def update_user_by_id(
         self,
@@ -62,6 +61,40 @@ class UsersQueriesMixin:
         new_wallet_address: Optional[str],
         new_image: Optional[str],
         new_status: Optional[int],
+    ) -> Record: ...
+
+class NFTsQueriesMixin:
+    async def get_nft_by_id(self, conn: Connection, *, id: int) -> Record: ...
+    async def get_nfts_by_user_id(
+        self, conn: Connection, *, user_id: int
+    ) -> Record: ...
+    async def get_nft(
+        self,
+        conn: Connection,
+        *,
+        user_id: int,
+        wallet_address: str,
+        token_address: str,
+        token_id: int,
+    ) -> Record: ...
+    async def create_new_nft(
+        self,
+        conn: Connection,
+        *,
+        user_id: int,
+        wallet_address: str,
+        image_url: str,
+        token_address: str,
+        token_id: int,
+        name: str,
+        symbol: str,
+    ) -> Record: ...
+    async def update_nft_by_id(
+        self,
+        conn: Connection,
+        *,
+        id: int,
+        new_image_url: Optional[str],
     ) -> Record: ...
 
 class ProfilesQueriesMixin:
@@ -93,12 +126,11 @@ class ProfilesQueriesMixin:
         self, conn: Connection, *, uid: str
     ) -> Record: ...
 
-
-
 class Queries(
     StoresQueriesMixin,
     UsersQueriesMixin,
     ProfilesQueriesMixin,
+    NFTsQueriesMixin,
 ): ...
 
 queries: Queries

@@ -25,7 +25,7 @@ def create_jwt_token(
 
 def create_access_token_for_user(user: User, secret_key: str) -> str:
     return create_jwt_token(
-        jwt_content=JWTUser(id=user.id_).dict(),
+        jwt_content=JWTUser(id=user.id_, wallet_address=user.wallet_address).dict(),
         secret_key=secret_key,
         expires_delta=timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES),
     )
@@ -34,6 +34,17 @@ def create_access_token_for_user(user: User, secret_key: str) -> str:
 def get_user_id_from_token(token: str, secret_key: str) -> str:
     try:
         return JWTUser(**jwt.decode(token, secret_key, algorithms=[ALGORITHM])).id
+    except jwt.PyJWTError as decode_error:
+        raise ValueError("unable to decode JWT token") from decode_error
+    except ValidationError as validation_error:
+        raise ValueError("malformed payload in token") from validation_error
+
+
+def get_user_wallet_address_from_token(token: str, secret_key: str) -> str:
+    try:
+        return JWTUser(
+            **jwt.decode(token, secret_key, algorithms=[ALGORITHM])
+        ).wallet_address
     except jwt.PyJWTError as decode_error:
         raise ValueError("unable to decode JWT token") from decode_error
     except ValidationError as validation_error:
