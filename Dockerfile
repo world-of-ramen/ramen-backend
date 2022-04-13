@@ -1,4 +1,4 @@
-FROM python:3.9-slim
+FROM python:3.9.12-buster
 
 ENV PORT=$_PORT
 ENV PYTHONUNBUFFERED=1
