@@ -7,14 +7,14 @@ from starlette.status import HTTP_404_NOT_FOUND
 from app.api.dependencies.database import get_repository
 from app.db.errors import EntityDoesNotExist
 from app.db.repositories.posts import PostsRepository
-from app.models.domain.posts import Post
+from app.models.domain.posts import PostWithWalletAddress
 from app.resources import strings
 
 
 async def get_post_by_id_from_path(
     id: int = Path(...),
     posts_repo: PostsRepository = Depends(get_repository(PostsRepository)),
-) -> Post:
+) -> PostWithWalletAddress:
     try:
         return await posts_repo.get_post_by_id(id=id)
     except EntityDoesNotExist:

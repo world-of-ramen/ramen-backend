@@ -3,6 +3,7 @@ from typing import Optional
 
 from pydantic import BaseModel
 
+from app.models.domain.posts import PostWithComments
 from app.models.domain.posts import PostWithWalletAddress
 from app.models.schemas.ramenschema import RamenSchema
 
@@ -27,5 +28,5 @@ class PostInResponse(RamenSchema):
 
 
 class PostListResponse(RamenSchema):
-    posts: List[PostWithWalletAddress]
+    posts: List[PostWithComments]
     total: int

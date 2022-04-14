@@ -2,9 +2,11 @@
 USER_DOES_NOT_EXIST_ERROR = "user does not exist"
 STORE_DOES_NOT_EXIST_ERROR = "store does not exist"
 POST_DOES_NOT_EXIST_ERROR = "post does not exist"
+COMMENT_DOES_NOT_EXIST_ERROR = "comment does not exist"
 ARTICLE_DOES_NOT_EXIST_ERROR = "article does not exist"
 ARTICLE_ALREADY_EXISTS = "article already exists"
 USER_IS_NOT_AUTHOR_OF_POST = "you are not an author of this post"
+USER_IS_NOT_AUTHOR_OF_COMMENT = "you are not an author of this comment"
 
 BAD_REQUEST = "bad request"
 USERNAME_TAKEN = "user with this username already exists"
