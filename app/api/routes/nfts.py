@@ -1,6 +1,9 @@
+from typing import Optional
+
 from fastapi import APIRouter
 from fastapi import Depends
 from fastapi import HTTPException
+from fastapi import Query
 from starlette.status import HTTP_403_FORBIDDEN
 
 from app.api.dependencies.authentication import get_current_user_authorizer
@@ -17,14 +20,19 @@ router = APIRouter()
 
 @router.get("/list", response_model=NFTListResponse, name="nfts:get-user-nfts")
 async def retrieve_nfts(
+    limit: int = Query(100, ge=1),
+    cursor: Optional[str] = None,
     user: User = Depends(get_current_user_authorizer()),
     nfts_repo: NFTsRepository = Depends(get_repository(NFTsRepository)),
 ) -> NFTListResponse:
     try:
-        nfts = await nft.get_all_nft(
-            wallet_address=user.wallet_address, user_id=user.id_, nfts_repo=nfts_repo
+        return await nft.get_nft_list(
+            nfts_repo=nfts_repo,
+            wallet_address=user.wallet_address,
+            user_id=user.id_,
+            limit=limit,
+            cursor=cursor,
         )
-        return NFTListResponse(nfts=nfts)
     except Exception:
         raise HTTPException(status_code=HTTP_403_FORBIDDEN, detail=strings.NFT_ERROR)
 
