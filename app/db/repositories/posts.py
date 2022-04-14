@@ -7,8 +7,10 @@ from app.core.config import get_app_settings
 from app.db.errors import EntityDoesNotExist
 from app.db.queries.queries import queries
 from app.db.repositories.base import BaseRepository
+from app.db.repositories.comments import CommentsRepository
 from app.db.repositories.users import UsersRepository
 from app.models.domain.posts import Post
+from app.models.domain.posts import PostWithComments
 from app.models.domain.posts import PostWithWalletAddress
 from app.models.schemas.posts import PostListResponse
 
@@ -19,6 +21,7 @@ class PostsRepository(BaseRepository):
     def __init__(self, conn: Connection) -> None:
         super().__init__(conn)
         self._users_repo = UsersRepository(conn)
+        self._comments_repo = CommentsRepository(conn)
 
     async def get_post_by_id(self, *, id: int) -> PostWithWalletAddress:
         post_row = await queries.get_post_by_id(self.connection, id=id)
@@ -32,6 +35,7 @@ class PostsRepository(BaseRepository):
         self,
         *,
         limit: int = 100,
+        comments_limit: int = 3,
         offset: int = 0,
         store_id: Optional[int] = None,
         user_id: Optional[int] = None,
@@ -53,7 +57,9 @@ class PostsRepository(BaseRepository):
         )
 
         post_list = [
-            await self._get_post_from_db_record(post_row=post_row)
+            await self._get_post_from_db_for_list_record(
+                post_row=post_row, comments_limit=comments_limit
+            )
             for post_row in post_rows
         ]
 
@@ -77,6 +83,36 @@ class PostsRepository(BaseRepository):
             body=post_row["body"],
             image_url=post_row["image_url"],
             rating=post_row["rating"],
+            status=post_row["status"],
+            created_at=post_row["created_at"],
+            updated_at=post_row["updated_at"],
+        )
+
+    async def _get_post_from_db_for_list_record(
+        self, *, post_row: Record, comments_limit: int
+    ) -> PostWithComments:
+        user_id = post_row["user_id"]
+        post_id = post_row["id"]
+
+        user_wallet_address = (
+            await self._users_repo.get_wallet_address_by_user_id(user_id=user_id)
+            if user_id is not None
+            else "匿名"
+        )
+
+        comments = await self._comments_repo.get_comment_list(
+            post_id=post_id, limit=comments_limit
+        )
+
+        return PostWithComments(
+            id_=post_id,
+            store_id=post_row["store_id"],
+            user_id=user_id,
+            user_wallet_address=user_wallet_address,
+            body=post_row["body"],
+            image_url=post_row["image_url"],
+            rating=post_row["rating"],
+            comments=comments.comments,
             status=post_row["status"],
             created_at=post_row["created_at"],
             updated_at=post_row["updated_at"],

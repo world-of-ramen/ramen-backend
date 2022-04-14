@@ -34,6 +34,7 @@ async def retrieve_post_list(
     user: User = Depends(get_current_user_authorizer(required=False)),
     store_id: Optional[int] = Query(None, ge=1),
     limit: int = Query(100, ge=1),
+    comments_limit: int = Query(3, ge=1, description="Post內顯示的留言數上限"),
     offset: int = Query(0, ge=0),
     posts_repo: PostsRepository = Depends(get_repository(PostsRepository)),
 ) -> PostListResponse:
@@ -44,6 +45,7 @@ async def retrieve_post_list(
 
     posts = await posts_repo.get_post_list(
         limit=limit,
+        comments_limit=comments_limit,
         offset=offset,
         store_id=store_id,
         user_id=user.id_ if user else None,
