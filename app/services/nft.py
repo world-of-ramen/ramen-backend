@@ -1,5 +1,5 @@
 import json
-from typing import List
+from typing import Optional
 
 import requests
 from requests.structures import CaseInsensitiveDict
@@ -7,7 +7,7 @@ from requests.structures import CaseInsensitiveDict
 from app.core.config import get_app_settings
 from app.db.errors import EntityDoesNotExist
 from app.db.repositories.nfts import NFTsRepository
-from app.models.domain.nfts import NFT
+from app.models.schemas.nfts import NFTListResponse
 
 SETTINGS = get_app_settings()
 
@@ -16,16 +16,24 @@ headers["accept"] = "application/json"
 headers["X-API-Key"] = SETTINGS.moralis_api_key
 
 
-async def get_all_nft(
+async def get_nft_list(
+    nfts_repo: NFTsRepository,
     wallet_address: str,
     user_id: int,
-    nfts_repo: NFTsRepository,
-) -> List[NFT]:
-    url = f"https://deep-index.moralis.io/api/v2/{wallet_address}/nft?chain=eth&format=decimal"
+    limit: int = 100,
+    cursor: Optional[str] = None,
+) -> NFTListResponse:
+    if cursor is None:
+        url = f"https://deep-index.moralis.io/api/v2/{wallet_address}/nft?chain=eth&format=decimal&limit={limit}"
+    else:
+        url = f"https://deep-index.moralis.io/api/v2/{wallet_address}/nft?chain=eth&format=decimal&limit={limit}&cursor={cursor}"
+
     resp = requests.get(url, headers=headers)
     list = []
     if resp.status_code == 200:
         jsons = json.loads(resp.text)
+        total = jsons["total"]
+        cursor = jsons["cursor"]
         for r in jsons["result"]:
             if r["metadata"] is None:
                 continue
@@ -55,6 +63,6 @@ async def get_all_nft(
                     symbol=symbol,
                 )
                 list.append(nft)
-        return list
+        return NFTListResponse(nfts=list, total=total, cursor=cursor)
     else:
         raise Exception("something wrong with moralis api")

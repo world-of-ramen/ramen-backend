@@ -10,3 +10,5 @@ class NFTInResponse(RamenSchema):
 
 class NFTListResponse(RamenSchema):
     nfts: List[NFT]
+    total: int
+    cursor: str
