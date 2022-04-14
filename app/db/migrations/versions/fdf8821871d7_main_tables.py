@@ -240,15 +240,80 @@ def create_nfts_table() -> None:
     )
 
 
+def create_posts_table() -> None:
+    op.create_table(
+        "posts",
+        sa.Column("id", sa.Integer, primary_key=True),
+        sa.Column(
+            "store_id",
+            sa.Integer,
+            sa.ForeignKey("stores.id", ondelete="CASCADE"),
+            unique=False,
+            nullable=False,
+            index=True,
+        ),
+        sa.Column(
+            "user_id",
+            sa.Integer,
+            sa.ForeignKey("users.id", ondelete="CASCADE"),
+            unique=False,
+            nullable=False,
+            index=True,
+        ),
+        sa.Column(
+            "body",
+            sa.Text,
+            unique=False,
+            nullable=True,
+            index=False,
+            comment="Ex: 好吃",
+        ),
+        sa.Column(
+            "image_url",
+            sa.Text,
+            unique=False,
+            nullable=True,
+            index=False,
+            comment="Ex: https://oo.jpeg",
+        ),
+        sa.Column(
+            "rating",
+            sa.Float,
+            nullable=True,
+            index=False,
+            comment="Ex: 4.5",
+        ),
+        sa.Column(
+            "status",
+            sa.Integer,
+            nullable=False,
+            index=True,
+            comment="Ex: 0: 草稿, 1: 已發佈, 2: 已刪除",
+        ),
+        *timestamps(),
+    )
+    op.execute(
+        """
+        CREATE TRIGGER update_posts_modtime
+            BEFORE UPDATE
+            ON posts
+            FOR EACH ROW
+        EXECUTE PROCEDURE update_updated_at_column();
+        """
+    )
+
+
 def upgrade() -> None:
     create_updated_at_trigger()
     create_stores_table()
     create_users_table()
     create_nfts_table()
+    create_posts_table()
 
 
 def downgrade() -> None:
+    op.drop_table("posts")
+    op.drop_table("nfts")
     op.drop_table("users")
     op.drop_table("stores")
-    op.drop_table("nfts")
     op.execute("DROP FUNCTION update_updated_at_column")

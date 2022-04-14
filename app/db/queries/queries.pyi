@@ -50,6 +50,9 @@ class UsersQueriesMixin:
     async def get_user_by_wallet_address(
         self, conn: Connection, *, wallet_address: str
     ) -> Record: ...
+    async def get_wallet_address_by_user_id(
+        self, conn: Connection, *, user_id: int
+    ) -> Record: ...
     async def create_new_user(
         self, conn: Connection, *, wallet_address: str, image: str, status: int
     ) -> Record: ...
@@ -126,11 +129,42 @@ class ProfilesQueriesMixin:
         self, conn: Connection, *, uid: str
     ) -> Record: ...
 
+class PostsQueriesMixin:
+    async def get_post_by_id(self, conn: Connection, *, id: int) -> Record: ...
+    async def get_posts_by_store_id(
+        self, conn: Connection, limit: int, offset: int, store_id: int
+    ) -> Record: ...
+    async def get_posts_by_user_id(
+        self, conn: Connection, limit: int, offset: int, user_id: int
+    ) -> Record: ...
+    async def create_post(
+        self,
+        conn: Connection,
+        *,
+        store_id: int,
+        user_id: int,
+        body: Optional[str],
+        image_url: Optional[str],
+        rating: Optional[float],
+        status: int,
+    ) -> Record: ...
+    async def update_post_by_id(
+        self,
+        conn: Connection,
+        *,
+        id: int,
+        new_body: Optional[str],
+        new_image_url: Optional[str],
+        new_rating: Optional[float],
+        new_status: Optional[int],
+    ) -> Record: ...
+
 class Queries(
     StoresQueriesMixin,
     UsersQueriesMixin,
     ProfilesQueriesMixin,
     NFTsQueriesMixin,
+    PostsQueriesMixin,
 ): ...
 
 queries: Queries
