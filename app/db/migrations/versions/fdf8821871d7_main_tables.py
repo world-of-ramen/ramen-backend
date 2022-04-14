@@ -303,15 +303,65 @@ def create_posts_table() -> None:
     )
 
 
+def create_comments_table() -> None:
+    op.create_table(
+        "comments",
+        sa.Column("id", sa.Integer, primary_key=True),
+        sa.Column(
+            "post_id",
+            sa.Integer,
+            sa.ForeignKey("posts.id", ondelete="CASCADE"),
+            unique=False,
+            nullable=False,
+            index=True,
+        ),
+        sa.Column(
+            "user_id",
+            sa.Integer,
+            sa.ForeignKey("users.id", ondelete="CASCADE"),
+            unique=False,
+            nullable=True,
+            index=True,
+        ),
+        sa.Column(
+            "body",
+            sa.Text,
+            unique=False,
+            nullable=True,
+            index=False,
+            comment="Ex: 好吃",
+        ),
+        sa.Column(
+            "status",
+            sa.Integer,
+            nullable=False,
+            index=True,
+            comment="Ex: 0: 草稿, 1: 已發佈, 2: 已刪除",
+        ),
+        *timestamps(),
+    )
+    op.execute(
+        """
+        CREATE TRIGGER update_comments_modtime
+            BEFORE UPDATE
+            ON comments
+            FOR EACH ROW
+        EXECUTE PROCEDURE update_updated_at_column();
+        """
+    )
+
+
 def upgrade() -> None:
     create_updated_at_trigger()
     create_stores_table()
     create_users_table()
     create_nfts_table()
     create_posts_table()
+    create_comments_table()
 
 
 def downgrade() -> None:
+    op.drop_table("comments")
     op.drop_table("posts")
     op.drop_table("nfts")
     op.drop_table("users")

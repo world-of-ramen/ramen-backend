@@ -37,7 +37,6 @@ async def retrieve_post_list(
     offset: int = Query(0, ge=0),
     posts_repo: PostsRepository = Depends(get_repository(PostsRepository)),
 ) -> PostListResponse:
-    print(f"user: {user}")
     if not user and not store_id:
         raise HTTPException(
             status_code=HTTP_401_UNAUTHORIZED, detail=strings.AUTHENTICATION_REQUIRED
@@ -99,10 +98,14 @@ async def update_post(
     name="posts:update-post-stautus-deleted-by-id",
 )
 async def delete_post(
-    # staff: Staff = Depends(get_current_staff_authorizer()),
+    user: User = Depends(get_current_user_authorizer()),
     post_in_db: Post = Depends(get_post_by_id_from_path),
     posts_repo: PostsRepository = Depends(get_repository(PostsRepository)),
 ) -> PostInResponse:
+    if user.id_ != post_in_db.user_id:
+        raise HTTPException(
+            status_code=HTTP_403_FORBIDDEN, detail=strings.USER_IS_NOT_AUTHOR_OF_POST
+        )
 
     post_updated = await posts_repo.update_post(
         post_in_db=post_in_db, status=status.DELETED

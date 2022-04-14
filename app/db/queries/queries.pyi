@@ -159,12 +159,36 @@ class PostsQueriesMixin:
         new_status: Optional[int],
     ) -> Record: ...
 
+class CommentsQueriesMixin:
+    async def get_comment_by_id(self, conn: Connection, *, id: int) -> Record: ...
+    async def get_comments_by_post_id(
+        self, conn: Connection, limit: int, offset: int, post_id: int
+    ) -> Record: ...
+    async def create_comment(
+        self,
+        conn: Connection,
+        *,
+        post_id: int,
+        user_id: Optional[int],
+        body: Optional[str],
+        status: int,
+    ) -> Record: ...
+    async def update_comment_by_id(
+        self,
+        conn: Connection,
+        *,
+        id: int,
+        new_body: Optional[str],
+        new_status: Optional[int],
+    ) -> Record: ...
+
 class Queries(
     StoresQueriesMixin,
     UsersQueriesMixin,
     ProfilesQueriesMixin,
     NFTsQueriesMixin,
     PostsQueriesMixin,
+    CommentsQueriesMixin,
 ): ...
 
 queries: Queries
