@@ -59,9 +59,7 @@ RETURNING
 -- name: update-post-by-id<!
 UPDATE
     posts
-SET store_id     = :new_store_id,
-    user_id      = :new_user_id,
-    body         = :new_body,
+SET body         = :new_body,
     image_url    = :new_image_url,
     rating       = :new_rating,
     status       = :new_status

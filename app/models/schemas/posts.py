@@ -3,13 +3,12 @@ from typing import Optional
 
 from pydantic import BaseModel
 
-from app.models.domain.posts import Post
+from app.models.domain.posts import PostWithWalletAddress
 from app.models.schemas.ramenschema import RamenSchema
 
 
 class PostInCreate(BaseModel):
     store_id: int
-    user_id: Optional[int] = None
     body: Optional[str] = None
     rating: Optional[float] = None
     image_url: Optional[str] = None
@@ -17,8 +16,6 @@ class PostInCreate(BaseModel):
 
 
 class PostInUpdate(BaseModel):
-    store_id: Optional[int] = None
-    user_id: Optional[int] = None
     body: Optional[str] = None
     rating: Optional[float] = None
     image_url: Optional[str] = None
@@ -26,9 +23,9 @@ class PostInUpdate(BaseModel):
 
 
 class PostInResponse(RamenSchema):
-    post: Post
+    post: PostWithWalletAddress
 
 
 class PostListResponse(RamenSchema):
-    posts: List[Post]
+    posts: List[PostWithWalletAddress]
     total: int

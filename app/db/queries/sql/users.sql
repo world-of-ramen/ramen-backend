@@ -20,6 +20,12 @@ FROM users
 WHERE wallet_address = :wallet_address AND status = 1
 LIMIT 1;
 
+-- name: get-wallet-address-by-user-id^
+SELECT wallet_address
+FROM users
+WHERE id = :user_id AND status = 1
+LIMIT 1;
+
 -- name: get-users
 SELECT id,
        wallet_address,

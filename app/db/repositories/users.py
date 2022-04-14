@@ -25,6 +25,15 @@ class UsersRepository(BaseRepository):
         else:
             return None
 
+    async def get_wallet_address_by_user_id(self, *, user_id: int) -> Optional[str]:
+        user_row = await queries.get_wallet_address_by_user_id(
+            self.connection, user_id=user_id
+        )
+        if user_row:
+            return user_row["wallet_address"]
+        else:
+            return None
+
     async def create_user(
         self, *, wallet_address: str, image: Optional[str] = None
     ) -> User:

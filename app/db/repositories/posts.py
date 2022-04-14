@@ -1,23 +1,26 @@
 from typing import Optional
 
+from asyncpg import Connection
 from asyncpg import Record
 
 from app.core.config import get_app_settings
 from app.db.errors import EntityDoesNotExist
 from app.db.queries.queries import queries
 from app.db.repositories.base import BaseRepository
+from app.db.repositories.users import UsersRepository
 from app.models.domain.posts import Post
+from app.models.domain.posts import PostWithWalletAddress
 from app.models.schemas.posts import PostListResponse
 
 SETTINGS = get_app_settings()
 
 
 class PostsRepository(BaseRepository):
-    # def __init__(self, conn: Connection) -> None:
-    #     super().__init__(conn)
-    #     self._tags_repo = TagsRepository(conn)
+    def __init__(self, conn: Connection) -> None:
+        super().__init__(conn)
+        self._users_repo = UsersRepository(conn)
 
-    async def get_post_by_id(self, *, id: int) -> Post:
+    async def get_post_by_id(self, *, id: int) -> PostWithWalletAddress:
         post_row = await queries.get_post_by_id(self.connection, id=id)
 
         if post_row:
@@ -56,11 +59,21 @@ class PostsRepository(BaseRepository):
 
         return PostListResponse(posts=post_list, total=total)
 
-    async def _get_post_from_db_record(self, *, post_row: Record) -> Post:
-        return Post(
+    async def _get_post_from_db_record(
+        self, *, post_row: Record
+    ) -> PostWithWalletAddress:
+        user_id = post_row["user_id"]
+        user_wallet_address = (
+            await self._users_repo.get_wallet_address_by_user_id(user_id=user_id)
+            if user_id is not None
+            else "匿名"
+        )
+
+        return PostWithWalletAddress(
             id_=post_row["id"],
             store_id=post_row["store_id"],
-            user_id=post_row["user_id"],
+            user_id=user_id,
+            user_wallet_address=user_wallet_address,
             body=post_row["body"],
             image_url=post_row["image_url"],
             rating=post_row["rating"],
@@ -76,7 +89,7 @@ class PostsRepository(BaseRepository):
         self,
         *,
         store_id: int,
-        user_id: Optional[int] = None,
+        user_id: int,
         body: Optional[str] = None,
         image_url: Optional[str] = None,
         rating: Optional[float] = None,
@@ -107,16 +120,12 @@ class PostsRepository(BaseRepository):
     async def update_post(
         self,
         *,
-        post_in_db: Post,
-        store_id: Optional[int] = None,
-        user_id: Optional[int] = None,
+        post_in_db: PostWithWalletAddress,
         body: Optional[str] = None,
         image_url: Optional[str] = None,
         rating: Optional[float] = None,
         status: Optional[int] = None,
-    ) -> Post:
-        post_in_db.store_id = store_id if store_id is not None else post_in_db.store_id
-        post_in_db.user_id = user_id if user_id is not None else post_in_db.user_id
+    ) -> PostWithWalletAddress:
         post_in_db.body = body or post_in_db.body
         post_in_db.image_url = image_url or post_in_db.image_url
         post_in_db.rating = rating if rating is not None else post_in_db.rating
@@ -126,8 +135,6 @@ class PostsRepository(BaseRepository):
             post_in_db.updated_at = await queries.update_post_by_id(
                 self.connection,
                 id=post_in_db.id_,
-                new_store_id=post_in_db.store_id,
-                new_user_id=post_in_db.user_id,
                 new_body=post_in_db.body,
                 new_image_url=post_in_db.image_url,
                 new_rating=post_in_db.rating,

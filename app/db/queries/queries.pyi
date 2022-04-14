@@ -50,6 +50,9 @@ class UsersQueriesMixin:
     async def get_user_by_wallet_address(
         self, conn: Connection, *, wallet_address: str
     ) -> Record: ...
+    async def get_wallet_address_by_user_id(
+        self, conn: Connection, *, user_id: int
+    ) -> Record: ...
     async def create_new_user(
         self, conn: Connection, *, wallet_address: str, image: str, status: int
     ) -> Record: ...
@@ -139,7 +142,7 @@ class PostsQueriesMixin:
         conn: Connection,
         *,
         store_id: int,
-        user_id: Optional[int],
+        user_id: int,
         body: Optional[str],
         image_url: Optional[str],
         rating: Optional[float],
@@ -150,8 +153,6 @@ class PostsQueriesMixin:
         conn: Connection,
         *,
         id: int,
-        new_store_id: Optional[int],
-        new_user_id: Optional[int],
         new_body: Optional[str],
         new_image_url: Optional[str],
         new_rating: Optional[float],

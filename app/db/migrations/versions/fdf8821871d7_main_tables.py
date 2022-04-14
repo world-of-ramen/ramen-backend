@@ -257,7 +257,7 @@ def create_posts_table() -> None:
             sa.Integer,
             sa.ForeignKey("users.id", ondelete="CASCADE"),
             unique=False,
-            nullable=True,
+            nullable=False,
             index=True,
         ),
         sa.Column(

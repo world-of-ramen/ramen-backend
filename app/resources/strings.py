@@ -4,7 +4,7 @@ STORE_DOES_NOT_EXIST_ERROR = "store does not exist"
 POST_DOES_NOT_EXIST_ERROR = "post does not exist"
 ARTICLE_DOES_NOT_EXIST_ERROR = "article does not exist"
 ARTICLE_ALREADY_EXISTS = "article already exists"
-USER_IS_NOT_AUTHOR_OF_ARTICLE = "you are not an author of this article"
+USER_IS_NOT_AUTHOR_OF_POST = "you are not an author of this post"
 
 BAD_REQUEST = "bad request"
 USERNAME_TAKEN = "user with this username already exists"
