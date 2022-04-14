@@ -2,6 +2,7 @@ import json
 from typing import Optional
 
 import requests
+from loguru import logger
 from requests.structures import CaseInsensitiveDict
 
 from app.core.config import get_app_settings
@@ -36,6 +37,11 @@ async def get_nft_list(
         cursor = jsons["cursor"]
         for r in jsons["result"]:
             if r["metadata"] is None:
+                logger.info(
+                    "This NFT doesn't have metadata. Token address: {0}, Token id: {1}",
+                    token_address=r["token_address"],
+                    token_id=int(r["token_id"]),
+                )
                 continue
             token_address = r["token_address"]
             token_id = int(r["token_id"])
