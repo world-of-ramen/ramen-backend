@@ -34,6 +34,7 @@ async def get_nft_list(
     if resp.status_code == 200:
         jsons = json.loads(resp.text)
         cursor = jsons["cursor"]
+        total = jsons["total"]
         for r in jsons["result"]:
             token_address = r["token_address"]
             if token_address not in SETTINGS.whitelist_contract_address:
@@ -67,6 +68,6 @@ async def get_nft_list(
                     symbol=symbol,
                 )
                 list.append(nft)
-        return NFTListResponse(nfts=list, total=len(list), cursor=cursor)
+        return NFTListResponse(nfts=list, total=total, cursor=cursor)
     else:
         raise Exception("something wrong with moralis api")
