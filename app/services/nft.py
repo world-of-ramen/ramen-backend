@@ -39,8 +39,8 @@ async def get_nft_list(
             if r["metadata"] is None:
                 logger.info(
                     "This NFT doesn't have metadata. Token address: {0}, Token id: {1}",
-                    token_address=r["token_address"],
-                    token_id=int(r["token_id"]),
+                    r["token_address"],
+                    int(r["token_id"]),
                 )
                 continue
             token_address = r["token_address"]
