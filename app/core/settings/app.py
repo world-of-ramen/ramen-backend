@@ -47,6 +47,7 @@ class AppSettings(BaseAppSettings):
     use_google_place_api: bool = False
 
     moralis_api_key: str = ""
+    whitelist_contract_address: List[str] = []
 
     class Config:
         validate_assignment = True

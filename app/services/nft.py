@@ -33,22 +33,20 @@ async def get_nft_list(
     list = []
     if resp.status_code == 200:
         jsons = json.loads(resp.text)
-        total = jsons["total"]
         cursor = jsons["cursor"]
         for r in jsons["result"]:
-            if r["metadata"] is None:
+            token_address = r["token_address"]
+            if token_address not in SETTINGS.whitelist_contract_address:
                 logger.info(
-                    "This NFT doesn't have metadata. Token address: {0}, Token id: {1}",
-                    r["token_address"],
-                    int(r["token_id"]),
+                    "This address {0} is not in whitelist {1}",
+                    token_address,
+                    SETTINGS.whitelist_contract_address,
                 )
                 continue
-            token_address = r["token_address"]
             token_id = int(r["token_id"])
             name = r["name"]
             symbol = r["symbol"]
-            dict = json.loads(r["metadata"])
-            image_url = dict["image"]
+            image_url = r["token_uri"]
             try:
                 nft = await nfts_repo.get_nft(
                     user_id=user_id,
@@ -69,6 +67,6 @@ async def get_nft_list(
                     symbol=symbol,
                 )
                 list.append(nft)
-        return NFTListResponse(nfts=list, total=total, cursor=cursor)
+        return NFTListResponse(nfts=list, total=len(list), cursor=cursor)
     else:
         raise Exception("something wrong with moralis api")
