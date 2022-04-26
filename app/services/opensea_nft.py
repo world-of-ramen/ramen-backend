@@ -13,7 +13,7 @@ SETTINGS = get_app_settings()
 
 headers = CaseInsensitiveDict()
 headers["accept"] = "application/json"
-headers["X-API-Key"] = SETTINGS.moralis_api_key
+headers["X-API-KEY"] = SETTINGS.opensea_api_key
 
 
 async def get_nft_list(
@@ -44,7 +44,7 @@ async def get_nft_list(
         previous_cursor = jsons["previous"]
         for asset in jsons["assets"]:
             token_id = int(asset["token_id"])
-            token_address = asset["asset_contract"]["token_address"]
+            token_address = asset["asset_contract"]["address"]
             name = asset["name"]
             image_url = asset["image_url"]
             symbol = asset["asset_contract"]["symbol"]
@@ -73,4 +73,4 @@ async def get_nft_list(
             nfts=list, previous_cursor=previous_cursor, next_cursor=next_cursor
         )
     else:
-        raise Exception("something wrong with moralis api")
+        raise Exception("something wrong with opensea api")

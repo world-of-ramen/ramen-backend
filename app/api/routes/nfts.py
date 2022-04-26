@@ -34,5 +34,6 @@ async def retrieve_nfts(
         )
     except HTTPException as e:
         raise e
-    except Exception:
+    except Exception as e:
+        print(e)
         raise HTTPException(status_code=HTTP_500_INTERNAL_SERVER_ERROR)
