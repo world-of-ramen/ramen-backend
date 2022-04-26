@@ -1,3 +1,5 @@
+from typing import List
+
 from asyncpg import Record
 
 from app.db.errors import EntityDoesNotExist
@@ -99,3 +101,9 @@ class NFTsRepository(BaseRepository):
             )
 
         return nft_in_db
+
+    async def get_whitelist_contract(self, *, id: int) -> List[str]:
+        rows = await queries.get_whitelist_contract(self.connection)
+        list = []
+        for row in rows:
+            list.append[row]
