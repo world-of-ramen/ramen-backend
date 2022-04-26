@@ -23,7 +23,7 @@ async def get_nft_list(
     limit: int = 20,
     cursor: Optional[str] = None,
 ) -> OpenseaNFTListResponse:
-    whitelist = await nfts_repo.get_whitelist_contract
+    whitelist = SETTINGS.whitelist_contract_address
 
     if cursor is None:
         url = (
