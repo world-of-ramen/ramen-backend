@@ -55,23 +55,3 @@ SET image_url    = :new_image_url
 WHERE id = :id
 RETURNING
     updated_at;
-
--- name: create-whitelist_contract<!
-INSERT INTO whitelist_contract (contract_address, status)
-VALUES (contract_address, 1)
-RETURNING
-    id, created_at, updated_at;
-
--- name: get_whitelist_contract
-SELECT contract_address
-FROM whitelist_contract
-LIMIT :limit
-OFFSET :offset;
-
--- name: update-whitelist_contract<!
-UPDATE
-    whitelist_contract
-SET status       = :new_status
-WHERE id = :id
-RETURNING
-    updated_at;

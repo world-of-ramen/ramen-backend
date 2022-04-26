@@ -99,7 +99,9 @@ class NFTsQueriesMixin:
         id: int,
         new_image_url: Optional[str],
     ) -> Record: ...
-    async def get_whitelist_contract(self, conn: Connection) -> Record: ...
+
+class WhitelistContractsQueriesMixin:
+    async def get_whitelist_contracts(self, conn: Connection) -> Record: ...
 
 class ProfilesQueriesMixin:
     async def is_user_following_for_another(
@@ -190,6 +192,7 @@ class Queries(
     NFTsQueriesMixin,
     PostsQueriesMixin,
     CommentsQueriesMixin,
+    WhitelistContractsQueriesMixin,
 ): ...
 
 queries: Queries
