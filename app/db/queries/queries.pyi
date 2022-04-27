@@ -140,6 +140,9 @@ class PostsQueriesMixin:
     async def get_posts_by_user_id(
         self, conn: Connection, limit: int, offset: int, user_id: int
     ) -> Record: ...
+    async def get_latest_posts(
+        self, conn: Connection, limit: int, offset: int
+    ) -> Record: ...
     async def create_post(
         self,
         conn: Connection,
