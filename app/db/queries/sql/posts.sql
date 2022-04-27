@@ -12,6 +12,25 @@ FROM posts
 WHERE id = :id AND status = 1
 LIMIT 1;
 
+-- name: get-latest-posts
+SELECT *, count(*) OVER() AS total
+FROM (
+    SELECT
+        id,
+        store_id,
+        user_id,
+        body,
+        image_url,
+        rating,
+        status,
+        created_at,
+        updated_at
+    FROM posts) AS posts
+WHERE status = 1
+ORDER BY posts.created_at DESC
+LIMIT :limit
+OFFSET :offset;
+
 -- name: get-posts-by-store-id
 SELECT *, count(*) OVER() AS total
 FROM (

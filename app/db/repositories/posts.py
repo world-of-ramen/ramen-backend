@@ -39,16 +39,20 @@ class PostsRepository(BaseRepository):
         offset: int = 0,
         store_id: Optional[int] = None,
         user_id: Optional[int] = None,
+        is_public: Optional[bool] = None,
     ) -> PostListResponse:
-        post_rows = (
-            await queries.get_posts_by_store_id(
+        if store_id is not None:
+            post_rows = await queries.get_posts_by_store_id(
                 self.connection, limit=limit, offset=offset, store_id=store_id
             )
-            if store_id is not None
-            else await queries.get_posts_by_user_id(
+        elif is_public:
+            post_rows = await queries.get_latest_posts(
+                self.connection, limit=limit, offset=offset
+            )
+        else:
+            post_rows = await queries.get_posts_by_user_id(
                 self.connection, limit=limit, offset=offset, user_id=user_id
             )
-        )
 
         total = (
             await self._get_post_list_total_from_db_record(post_row=post_rows[0])

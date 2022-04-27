@@ -28,17 +28,18 @@ router = APIRouter()
     "/list",
     response_model=PostListResponse,
     name="post:get-post-list",
-    description="有帶store_id則會回傳該store的post, 沒帶則會回傳該用戶的post",
+    description="1.有帶store_id則會回傳該store最新posts 2.沒帶store_id但有帶is_public則會回最新posts 3.兩者都沒帶則會檢查token並回傳該用戶的post",
 )
 async def retrieve_post_list(
     user: User = Depends(get_current_user_authorizer(required=False)),
     store_id: Optional[int] = Query(None, ge=1),
+    is_public: bool = Query(False),
     limit: int = Query(100, ge=1),
     comments_limit: int = Query(3, ge=1, description="Post內顯示的留言數上限"),
     offset: int = Query(0, ge=0),
     posts_repo: PostsRepository = Depends(get_repository(PostsRepository)),
 ) -> PostListResponse:
-    if not user and not store_id:
+    if not user and not is_public and not (store_id is not None):
         raise HTTPException(
             status_code=HTTP_401_UNAUTHORIZED, detail=strings.AUTHENTICATION_REQUIRED
         )
@@ -49,6 +50,7 @@ async def retrieve_post_list(
         offset=offset,
         store_id=store_id,
         user_id=user.id_ if user else None,
+        is_public=is_public,
     )
 
     return posts
@@ -56,7 +58,6 @@ async def retrieve_post_list(
 
 @router.get("/{id}", response_model=PostInResponse, name="post:get-post-by-id")
 async def retrieve_post(
-    # staff: Staff = Depends(get_current_staff_authorizer()),
     post_in_db: Post = Depends(get_post_by_id_from_path),
 ) -> PostInResponse:
     return PostInResponse(post=post_in_db)
