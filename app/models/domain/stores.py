@@ -11,6 +11,7 @@ from app.models.domain.social_media import SocialMedia
 
 class Store(IDModelMixin, DateTimeModelMixin, RamenModel):
     name: str
+    description: Optional[str] = None
     phone: Optional[str] = None
     address: Optional[str] = None
     rating: Optional[float] = None

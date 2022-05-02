@@ -33,5 +33,7 @@ class FilesRepository(BaseRepository):
             return "png"
         elif mimetype == "image/jpeg" or mimetype == "image/jpg":
             return "jpg"
+        elif mimetype == "image/gif":
+            return "gif"
         else:
             raise EntityDoesNotExist(f"Unsupported mime type: {mimetype}")

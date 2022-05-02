@@ -8,6 +8,7 @@ from app.models.domain.ramenmodel import RamenModel
 class Comment(IDModelMixin, DateTimeModelMixin, RamenModel):
     post_id: int
     user_id: Optional[int] = None
+    user_image: Optional[str] = None
     body: Optional[str] = None
     status: int
 

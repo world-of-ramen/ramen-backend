@@ -69,21 +69,22 @@ class PostsRepository(BaseRepository):
 
         return PostListResponse(posts=post_list, total=total)
 
-    async def _get_post_from_db_record(
-        self, *, post_row: Record
-    ) -> PostWithWalletAddress:
+    async def _get_post_from_db_record(self, *, post_row: Record) -> Post:
         user_id = post_row["user_id"]
-        user_wallet_address = (
-            await self._users_repo.get_wallet_address_by_user_id(user_id=user_id)
+        user_info = (
+            await self._users_repo.get_user_by_id(id=user_id)
             if user_id is not None
-            else "匿名"
+            else None
         )
 
-        return PostWithWalletAddress(
+        return Post(
             id_=post_row["id"],
             store_id=post_row["store_id"],
             user_id=user_id,
-            user_wallet_address=user_wallet_address,
+            user_wallet_address=user_info.wallet_address
+            if user_info and user_info.wallet_address is not None
+            else "訪客",
+            user_image=user_info.image if user_info else None,
             body=post_row["body"],
             image_url=post_row["image_url"],
             rating=post_row["rating"],
@@ -98,11 +99,7 @@ class PostsRepository(BaseRepository):
         user_id = post_row["user_id"]
         post_id = post_row["id"]
 
-        user_wallet_address = (
-            await self._users_repo.get_wallet_address_by_user_id(user_id=user_id)
-            if user_id is not None
-            else "匿名"
-        )
+        user_info = await self._users_repo.get_user_by_id(id=user_id)
 
         comments = await self._comments_repo.get_comment_list(
             post_id=post_id, limit=comments_limit
@@ -112,7 +109,10 @@ class PostsRepository(BaseRepository):
             id_=post_id,
             store_id=post_row["store_id"],
             user_id=user_id,
-            user_wallet_address=user_wallet_address,
+            user_wallet_address=user_info.wallet_address
+            if user_info and user_info.wallet_address is not None
+            else "訪客",
+            user_image=user_info.image if user_info else None,
             body=post_row["body"],
             image_url=post_row["image_url"],
             rating=post_row["rating"],

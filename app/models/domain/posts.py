@@ -10,6 +10,7 @@ from app.models.domain.ramenmodel import RamenModel
 class Post(IDModelMixin, DateTimeModelMixin, RamenModel):
     store_id: int
     user_id: Optional[int] = None
+    user_image: Optional[str] = None
     user_wallet_address: Optional[str] = None
     body: Optional[str] = None
     image_url: Optional[str] = None
@@ -21,5 +22,5 @@ class PostWithWalletAddress(Post):
     user_wallet_address: Optional[str] = None
 
 
-class PostWithComments(PostWithWalletAddress):
+class PostWithComments(Post):
     comments: Optional[List[CommentWithWalletAddress]] = None
