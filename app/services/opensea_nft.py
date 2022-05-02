@@ -32,9 +32,8 @@ async def get_nft_list(
     else:
         url = f"https://api.opensea.io/api/v1/assets?owner={wallet_address}&limit={limit}&cursor={cursor}"
 
-    if len(whitelist) != 0:
-        asset_contract_addresses = ",".join(whitelist)
-        url = f"{url}&asset_contract_addresses={asset_contract_addresses}"
+    for wl in whitelist:
+        url = f"{url}&asset_contract_addresses={wl}"
 
     resp = requests.get(url, headers=headers)
     list = []
@@ -73,4 +72,5 @@ async def get_nft_list(
             nfts=list, previous_cursor=previous_cursor, next_cursor=next_cursor
         )
     else:
+        print(f"request url: {url}")
         raise Exception("something wrong with opensea api")
