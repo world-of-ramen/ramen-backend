@@ -1,6 +1,7 @@
 -- name: get-store-by-id^
 SELECT id,
        name,
+       description,
        phone,
        address,
        rating,
@@ -23,6 +24,7 @@ FROM (
     SELECT
         id,
         name,
+        description,
         phone,
         address,
         rating,
@@ -42,8 +44,8 @@ LIMIT :limit
 OFFSET :offset;
 
 -- name: create-store<!
-INSERT INTO stores (name, phone, address, rating, review_count, image, social_media, business_hours, place_id, location, status)
-VALUES (:name, :phone, :address, :rating, :review_count, :image, :social_media, :business_hours, :place_id, :location, :status)
+INSERT INTO stores (name, description, phone, address, rating, review_count, image, social_media, business_hours, place_id, location, status)
+VALUES (:name, :description, :phone, :address, :rating, :review_count, :image, :social_media, :business_hours, :place_id, :location, :status)
 RETURNING
     id, created_at, updated_at;
 
@@ -51,6 +53,7 @@ RETURNING
 UPDATE
     stores
 SET name           = :new_name,
+    description    = :new_description,
     phone          = :new_phone,
     address        = :new_address,
     rating         = :new_rating,

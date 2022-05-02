@@ -58,17 +58,20 @@ class CommentsRepository(BaseRepository):
         self, *, comment_row: Record
     ) -> CommentWithWalletAddress:
         user_id = comment_row["user_id"]
-        user_wallet_address = (
-            await self._users_repo.get_wallet_address_by_user_id(user_id=user_id)
+        user_info = (
+            await self._users_repo.get_user_by_id(id=user_id)
             if user_id is not None
-            else "匿名"
+            else None
         )
 
         return CommentWithWalletAddress(
             id_=comment_row["id"],
             post_id=comment_row["post_id"],
             user_id=user_id,
-            user_wallet_address=user_wallet_address,
+            user_wallet_address=user_info.wallet_address
+            if user_info and user_info.wallet_address is not None
+            else "訪客",
+            user_image=user_info.image if user_info else None,
             body=comment_row["body"],
             status=comment_row["status"],
             created_at=comment_row["created_at"],

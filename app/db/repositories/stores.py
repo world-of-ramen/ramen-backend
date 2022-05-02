@@ -61,6 +61,7 @@ class StoresRepository(BaseRepository):
         return Store(
             id_=store_row["id"],
             name=store_row["name"],
+            description=store_row["description"],
             phone=store_row["phone"],
             address=store_row["address"],
             rating=store_row["rating"] if place is None else place.rating,
@@ -90,6 +91,7 @@ class StoresRepository(BaseRepository):
         self,
         *,
         name: str,
+        description: Optional[str] = None,
         phone: Optional[str] = None,
         address: Optional[str] = None,
         rating: Optional[float] = None,
@@ -103,6 +105,7 @@ class StoresRepository(BaseRepository):
     ) -> Store:
         new_store = Store(
             name=name,
+            description=description,
             phone=phone,
             address=address,
             rating=rating,
@@ -119,6 +122,7 @@ class StoresRepository(BaseRepository):
             store_row = await queries.create_store(
                 self.connection,
                 name=name,
+                description=description,
                 phone=phone,
                 address=address,
                 rating=rating,
@@ -138,6 +142,7 @@ class StoresRepository(BaseRepository):
         *,
         store_in_db: Store,
         name: Optional[str] = None,
+        description: Optional[str] = None,
         phone: Optional[str] = None,
         address: Optional[str] = None,
         rating: Optional[float] = None,
@@ -150,6 +155,7 @@ class StoresRepository(BaseRepository):
         status: Optional[int] = None,
     ) -> Store:
         store_in_db.name = name or store_in_db.name
+        store_in_db.description = description or store_in_db.description
         store_in_db.phone = phone or store_in_db.phone
         store_in_db.address = address or store_in_db.address
         store_in_db.rating = rating if rating is not None else store_in_db.rating
@@ -191,7 +197,8 @@ class StoresRepository(BaseRepository):
             store_in_db.updated_at = await queries.update_store_by_id(
                 self.connection,
                 id=store_in_db.id_,
-                new_name=store_in_db.phone,
+                new_name=store_in_db.name,
+                new_description=store_in_db.description,
                 new_phone=store_in_db.phone,
                 new_address=store_in_db.address,
                 new_rating=store_in_db.rating,

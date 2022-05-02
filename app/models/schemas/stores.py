@@ -13,6 +13,7 @@ from app.models.schemas.ramenschema import RamenSchema
 
 class StoreInCreate(BaseModel):
     name: str
+    description: Optional[str] = None
     phone: Optional[str] = None
     address: Optional[str] = None
     rating: Optional[float] = None
@@ -27,6 +28,7 @@ class StoreInCreate(BaseModel):
 
 class StoreInUpdate(BaseModel):
     name: Optional[str] = None
+    description: Optional[str] = None
     phone: Optional[str] = None
     address: Optional[str] = None
     rating: Optional[float] = None

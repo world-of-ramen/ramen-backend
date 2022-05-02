@@ -63,6 +63,9 @@ def create_stores_table() -> None:
             comment="Ex: 鷹流拉麵中山店",
         ),
         sa.Column(
+            "description", sa.Text, nullable=True, index=False, comment="Ex: 每週五晚上免費拉麵"
+        ),
+        sa.Column(
             "phone", sa.Text, nullable=True, index=False, comment="Ex: 0912345678"
         ),
         sa.Column(
