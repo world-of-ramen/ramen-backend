@@ -2,12 +2,14 @@ import json
 from typing import Optional
 
 import googlemaps
+from asyncpg import Connection
 from asyncpg import Record
 
 from app.core.config import get_app_settings
 from app.db.errors import EntityDoesNotExist
 from app.db.queries.queries import queries
 from app.db.repositories.base import BaseRepository
+from app.db.repositories.posts import PostsRepository
 from app.models.domain.business_hours import BusinessHours
 from app.models.domain.google import PlaceInfo
 from app.models.domain.google import PlaceSummary
@@ -21,9 +23,9 @@ SETTINGS = get_app_settings()
 
 
 class StoresRepository(BaseRepository):
-    # def __init__(self, conn: Connection) -> None:
-    #     super().__init__(conn)
-    #     self._tags_repo = TagsRepository(conn)
+    def __init__(self, conn: Connection) -> None:
+        super().__init__(conn)
+        self._posts_repo = PostsRepository(conn)
 
     async def get_store_by_id(self, *, id: int) -> Store:
         store_row = await queries.get_store_by_id(self.connection, id=id)
@@ -34,7 +36,7 @@ class StoresRepository(BaseRepository):
         raise EntityDoesNotExist(f"store with id {id} does not exist")
 
     async def get_store_list(
-        self, *, limit: int = 100, offset: int = 0
+        self, *, limit: int = 100, offset: int = 0, with_posts: int = 0
     ) -> StoreListResponse:
         store_rows = await queries.get_store_list(self.connection, limit, offset)
 
@@ -45,21 +47,32 @@ class StoresRepository(BaseRepository):
         )
 
         store_list = [
-            await self._get_store_from_db_record(store_row=store_row)
+            await self._get_store_from_db_record(
+                store_row=store_row, with_posts=with_posts
+            )
             for store_row in store_rows
         ]
 
         return StoreListResponse(stores=store_list, total=total)
 
-    async def _get_store_from_db_record(self, *, store_row: Record) -> Store:
+    async def _get_store_from_db_record(
+        self, *, with_posts: int = 0, store_row: Record
+    ) -> Store:
+        store_id = store_row["id"]
         place_id = store_row["place_id"]
         place = (
             await self._get_rating_n_reviews_by_place_id_from_google(place_id=place_id)
             if place_id and SETTINGS.use_google_place_api
             else None
         )
+
+        posts = (
+            await self._posts_repo.get_post_list(limit=with_posts, store_id=store_id)
+            if with_posts
+            else None
+        )
         return Store(
-            id_=store_row["id"],
+            id_=store_id,
             name=store_row["name"],
             description=store_row["description"],
             phone=store_row["phone"],
@@ -79,6 +92,7 @@ class StoresRepository(BaseRepository):
             location=json.loads(store_row["location"])
             if store_row["location"]
             else None,
+            posts=posts.posts if posts and posts.posts else None,
             status=store_row["status"],
             created_at=store_row["created_at"],
             updated_at=store_row["updated_at"],

@@ -23,9 +23,12 @@ router = APIRouter()
 async def retrieve_store_list(
     limit: int = Query(100, ge=1),
     offset: int = Query(0, ge=0),
+    with_posts: int = Query(1, ge=0),
     stores_repo: StoresRepository = Depends(get_repository(StoresRepository)),
 ) -> StoreListResponse:
-    stores = await stores_repo.get_store_list(limit=limit, offset=offset)
+    stores = await stores_repo.get_store_list(
+        limit=limit, offset=offset, with_posts=with_posts
+    )
 
     return stores
 
