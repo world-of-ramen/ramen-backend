@@ -1,4 +1,5 @@
 import json
+from typing import List
 from typing import Optional
 
 import googlemaps
@@ -11,6 +12,7 @@ from app.db.queries.queries import queries
 from app.db.repositories.base import BaseRepository
 from app.db.repositories.posts import PostsRepository
 from app.models.domain.business_hours import BusinessHours
+from app.models.domain.description import Description
 from app.models.domain.google import PlaceInfo
 from app.models.domain.google import PlaceSummary
 from app.models.domain.image import Image
@@ -74,7 +76,9 @@ class StoresRepository(BaseRepository):
         return Store(
             id_=store_id,
             name=store_row["name"],
-            description=store_row["description"],
+            descriptions=[i for i in json.loads(store_row["descriptions"])]
+            if store_row["descriptions"]
+            else [],
             phone=store_row["phone"],
             address=store_row["address"],
             rating=store_row["rating"] if place is None else place.rating,
@@ -105,7 +109,7 @@ class StoresRepository(BaseRepository):
         self,
         *,
         name: str,
-        description: Optional[str] = None,
+        descriptions: Optional[List[Description]] = None,
         phone: Optional[str] = None,
         address: Optional[str] = None,
         rating: Optional[float] = None,
@@ -119,7 +123,7 @@ class StoresRepository(BaseRepository):
     ) -> Store:
         new_store = Store(
             name=name,
-            description=description,
+            descriptions=descriptions,
             phone=phone,
             address=address,
             rating=rating,
@@ -136,7 +140,11 @@ class StoresRepository(BaseRepository):
             store_row = await queries.create_store(
                 self.connection,
                 name=name,
-                description=description,
+                descriptions=json.dumps(
+                    descriptions, indent=4, sort_keys=True, default=str
+                )
+                if descriptions
+                else None,
                 phone=phone,
                 address=address,
                 rating=rating,
@@ -156,7 +164,7 @@ class StoresRepository(BaseRepository):
         *,
         store_in_db: Store,
         name: Optional[str] = None,
-        description: Optional[str] = None,
+        descriptions: Optional[List[Description]] = None,
         phone: Optional[str] = None,
         address: Optional[str] = None,
         rating: Optional[float] = None,
@@ -169,7 +177,7 @@ class StoresRepository(BaseRepository):
         status: Optional[int] = None,
     ) -> Store:
         store_in_db.name = name or store_in_db.name
-        store_in_db.description = description or store_in_db.description
+        store_in_db.descriptions = descriptions or store_in_db.descriptions
         store_in_db.phone = phone or store_in_db.phone
         store_in_db.address = address or store_in_db.address
         store_in_db.rating = rating if rating is not None else store_in_db.rating
@@ -182,6 +190,16 @@ class StoresRepository(BaseRepository):
         store_in_db.place_id = place_id or store_in_db.place_id
         store_in_db.location = location or store_in_db.location
         store_in_db.status = status if status is not None else store_in_db.status
+
+        new_descriptions = None
+        if descriptions is not None:
+            new_descriptions = (
+                json.dumps(store_in_db.descriptions) if descriptions else None
+            )
+        elif store_in_db.descriptions:
+            new_descriptions = json.dumps(
+                store_in_db.descriptions, default=lambda x: x.__dict__
+            )
 
         new_image = None
         if image:
@@ -212,7 +230,7 @@ class StoresRepository(BaseRepository):
                 self.connection,
                 id=store_in_db.id_,
                 new_name=store_in_db.name,
-                new_description=store_in_db.description,
+                new_descriptions=new_descriptions,
                 new_phone=store_in_db.phone,
                 new_address=store_in_db.address,
                 new_rating=store_in_db.rating,
