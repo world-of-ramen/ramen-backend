@@ -4,6 +4,7 @@ from typing import Optional
 from pydantic import BaseModel
 
 from app.models.domain.business_hours import BusinessHours
+from app.models.domain.description import Description
 from app.models.domain.image import Image
 from app.models.domain.location import Location
 from app.models.domain.social_media import SocialMedia
@@ -13,7 +14,7 @@ from app.models.schemas.ramenschema import RamenSchema
 
 class StoreInCreate(BaseModel):
     name: str
-    description: Optional[str] = None
+    descriptions: Optional[List[Description]] = None
     phone: Optional[str] = None
     address: Optional[str] = None
     rating: Optional[float] = None
@@ -28,7 +29,7 @@ class StoreInCreate(BaseModel):
 
 class StoreInUpdate(BaseModel):
     name: Optional[str] = None
-    description: Optional[str] = None
+    descriptions: Optional[List[Description]] = None
     phone: Optional[str] = None
     address: Optional[str] = None
     rating: Optional[float] = None

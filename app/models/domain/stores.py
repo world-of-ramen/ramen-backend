@@ -4,6 +4,7 @@ from typing import Optional
 from app.models.common import DateTimeModelMixin
 from app.models.common import IDModelMixin
 from app.models.domain.business_hours import BusinessHours
+from app.models.domain.description import Description
 from app.models.domain.image import Image
 from app.models.domain.location import Location
 from app.models.domain.posts import PostWithComments
@@ -13,7 +14,7 @@ from app.models.domain.social_media import SocialMedia
 
 class Store(IDModelMixin, DateTimeModelMixin, RamenModel):
     name: str
-    description: Optional[str] = None
+    descriptions: Optional[List[Description]] = None
     phone: Optional[str] = None
     address: Optional[str] = None
     rating: Optional[float] = None

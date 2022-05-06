@@ -49,6 +49,7 @@ class AppSettings(BaseAppSettings):
     moralis_api_key: str = ""
     opensea_api_key: str = ""
     whitelist_contract_address: List[str] = []
+    admin_wallet_address: List[str] = []
 
     class Config:
         validate_assignment = True
