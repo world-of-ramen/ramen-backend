@@ -31,10 +31,13 @@ async def get_nft_list(
         )
     else:
         url = f"https://api.opensea.io/api/v1/assets?owner={wallet_address}&limit={limit}&cursor={cursor}"
-
+    
+    url_k = f"{url}&collection=kojiroutaipei"
+    
     for wl in whitelist:
         url = f"{url}&asset_contract_addresses={wl}"
 
+    # Smart Contract
     resp = requests.get(url, headers=headers)
     list = []
     if resp.status_code == 200:
@@ -68,6 +71,39 @@ async def get_nft_list(
                     symbol=symbol,
                 )
                 list.append(nft)
+
+        # Trouble kojiroutaipei
+        resp_k = requests.get(url_k, headers=headers)
+        if resp_k.status_code == 200:
+            jsons_k = json.loads(resp_k.text)
+            for asset_k in jsons_k["assets"]:
+                token_id = 0
+                token_address = "kojiroutaipei"
+                name = asset_k["name"]
+                image_url = asset_k["image_url"]
+                symbol = asset_k["asset_contract"]["symbol"]
+
+                try:
+                    nft = await nfts_repo.get_nft(
+                        user_id=user_id,
+                        wallet_address=wallet_address,
+                        token_address=token_address,
+                        token_id=token_id,
+                    )
+                    nft = await nfts_repo.update_nft(id=nft.id_, image_url=image_url)
+                    list.append(nft)
+                except EntityDoesNotExist:
+                    nft = await nfts_repo.create_nft(
+                        user_id=user_id,
+                        wallet_address=wallet_address,
+                        image_url=image_url,
+                        token_address=token_address,
+                        token_id=token_id,
+                        name=name,
+                        symbol=symbol,
+                    )
+                    list.append(nft)
+
         return OpenseaNFTListResponse(
             nfts=list, previous_cursor=previous_cursor, next_cursor=next_cursor
         )
