@@ -32,7 +32,7 @@ async def get_nft_list(
     else:
         url = f"https://api.opensea.io/api/v1/assets?owner={wallet_address}&limit={limit}&cursor={cursor}"
     
-    url_k = f"{url}&collection=e-shell"
+    url_k = f"{url}&collection=kojiroutaipei"
     
     for wl in whitelist:
         url = f"{url}&asset_contract_addresses={wl}"
@@ -77,8 +77,8 @@ async def get_nft_list(
         if resp_k.status_code == 200:
             jsons_k = json.loads(resp_k.text)
             for asset_k in jsons_k["assets"]:
-                token_id = 0
-                token_address = "e-shell"
+                token_id = int(asset_k["name"].split("#")[1])
+                token_address = "kojiroutaipei"
                 name = asset_k["name"]
                 image_url = asset_k["image_url"]
                 symbol = asset_k["asset_contract"]["symbol"]
