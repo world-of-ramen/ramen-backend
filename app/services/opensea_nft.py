@@ -77,7 +77,8 @@ async def get_nft_list(
         if resp_k.status_code == 200:
             jsons_k = json.loads(resp_k.text)
             for asset_k in jsons_k["assets"]:
-                token_id = int(asset_k["name"].split("#")[1])
+                token_id = asset_k["name"].split("#")[1]
+                token_id = int(token_id.split(' ')[0])
                 token_address = "kojiroutaipei"
                 name = asset_k["name"]
                 image_url = asset_k["image_url"]
